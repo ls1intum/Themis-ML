@@ -1,0 +1,84 @@
+version: '3.8'
+ 
+services:
+# http://localhost:80/docs
+# http://localhost:80/
+  feedback-suggestion:
+    build:
+      context: .
+      dockerfile: ./feedback-suggestion/Dockerfile
+    image: "harbor.ase.in.tum.de/ios2223cit/server:latest"
+    container_name: "feedback-suggestion"
+    depends_on:
+      - database
+    #ports:
+    #  - "80:80"
+    expose:
+       - 80
+    environment:
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    working_dir: /usr/src/app
+    volumes:
+      - './:/src'
+    networks:
+      - backend_network
+    labels:
+      # The domain the service will respond to
+      - "traefik.http.routers.backend.rule=Host(`localhost`)"
+      # Allow request only from the predefined entry point named "web"
+      - "traefik.http.routers.backend.entrypoints=web"
+      # We need to define the a service and specify, on which port our server is reachable
+      - "traefik.http.services.backend-service.loadbalancer.server.port=80"
+      # We have to add this service to our router "backend". That's how the router knows where to forward the  requests
+      - "traefik.http.routers.backend.service=backend-service"
+    
+  database:
+    image: postgres:15.1-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - database:/var/lib/postgresql/data
+
+# http://localhost:8080/dashboard
+  traefik:
+    container_name: "traefik"
+    image: "traefik:v2.9"
+    depends_on:
+      - feedback-suggestion
+    command:
+      # Enable Debug output
+      - "--log.level=DEBUG"
+      # Enable the api and the traefik dashboard for debugging purposes, which can be reached under 127.0.0.1:8080
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      # Enabling docker provider
+      - "--providers.docker=true"
+      # Traefik will listen to incoming request on the port 80
+      - "--entrypoints.web.address=:80"
+    networks:
+        - backend_network
+    ports:
+    # 8080 on the container is mapped to 8080 on the server/VM/your Machine. Port 8080 is where the api traefik dashboard is located
+      - "8080:8080"
+    # Port 80 is where our example-service is running
+      - "80:80"
+    # Traefik needs the docker.sock to detect new docker container
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      
+volumes:
+  database:
+    driver: local
+
+networks:
+  backend_network:
+    driver: bridge
+    name: backend_network
