@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.backend.rule=Host(`ios2223cit.ase.cit.tum.de`)"
       # Allow request only from the predefined entry point named "web"
       - "traefik.http.routers.backend.entrypoints=web"
-      # We need to define the a service and specify, on which port our server is reachable
+      # We need to define the service and specify, on which port our server is reachable
       - "traefik.http.services.backend-service.loadbalancer.server.port=80"
       # We have to add this service to our router "backend". That's how the router knows where to forward the  requests
       - "traefik.http.routers.backend.service=backend-service"
@@ -66,9 +66,9 @@ services:
     networks:
         - backend_network
     ports:
-    # 8080 on the container is mapped to 8080 on the server/VM/your Machine. Port 8080 is where the api traefik dashboard is located
+    # Port 8080 is where the api traefik dashboard is located
       - "8080:8080"
-    # Port 80 is where our example-service is running
+    # Port 80 is where our feedback-suggestion-service is running
       - "80:80"
     # Traefik needs the docker.sock to detect new docker container
     volumes:
