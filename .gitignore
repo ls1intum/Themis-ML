@@ -1,1 +1,5 @@
 # .gitignore file
+data/
+models/
+*.tar
+__pycache__/
