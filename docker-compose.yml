@@ -14,8 +14,7 @@ services:
     #ports:
     #  - "80:80"
     expose:
-       - 80
-       - 443
+       - 8000
     environment:
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
@@ -32,9 +31,9 @@ services:
       - "traefik.http.routers.backend.rule=Host(`ios2223cit.ase.cit.tum.de`)"
       # Allow request only from the predefined entry point named "web"
       - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.routers.backend.entrypoints=web-secure"
+      - "traefik.http.routers.backend.entrypoints=websecure"
       # We need to define the service and specify, on which port our server is reachable
-      - "traefik.http.services.backend-service.loadbalancer.server.port=80"
+      - "traefik.http.services.backend-service.loadbalancer.server.port=8000"
       # We have to add this service to our router "backend". That's how the router knows where to forward the requests
       - "traefik.http.routers.backend.service=backend-service"
     
@@ -65,7 +64,7 @@ services:
       - "--providers.docker=true"
       # Traefik will listen to incoming request on the port 80 (HTTP) AND on port 443 (HTTPS)
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.websecure.address=:443"
       - "--providers.file.directory=/configuration/"
       - "--providers.file.watch=true"
     networks:
@@ -78,9 +77,9 @@ services:
       - "443:443"
     # Traefik needs the docker.sock to detect new docker container
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/var/lib/rbg-cert/live/:/certificates"
       - "/develop/dynamic_conf.yml:/configuration/dynamic_conf.yml"
+      - "/var/lib/rbg-cert/live/:/certificates/"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
       
 volumes:
   database:
