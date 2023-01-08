@@ -1,5 +1,5 @@
 version: '3.8'
- 
+
 services:
 # http://localhost:80/docs
 # http://localhost:80/
@@ -14,7 +14,7 @@ services:
     #ports:
     #  - "80:80"
     expose:
-       - 80
+       - 8000
     environment:
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
@@ -28,12 +28,13 @@ services:
       - backend_network
     labels:
       # The domain the service will respond to (use localhost for local testing and ios2223cit.ase.cit.tum.de for production!)
-      - "traefik.http.routers.backend.rule=Host(`localhost`)"
+      - "traefik.http.routers.backend.rule=Host(`ios2223cit.ase.cit.tum.de`)"
       # Allow request only from the predefined entry point named "web"
-      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.entrypoints=websecure"
       # We need to define the service and specify, on which port our server is reachable
-      - "traefik.http.services.backend-service.loadbalancer.server.port=80"
-      # We have to add this service to our router "backend". That's how the router knows where to forward the  requests
+      - "traefik.http.services.backend-service.loadbalancer.server.port=8000"
+      # We have to add this service to our router "backend". That's how the router knows where to forward the requests
       - "traefik.http.routers.backend.service=backend-service"
 
   database:
@@ -47,7 +48,7 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
       # copy the sql script to create tables
-      - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - /develop/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
 # http://localhost:8080/dashboard
   traefik:
@@ -63,8 +64,11 @@ services:
       - "--api.dashboard=true"
       # Enabling docker provider
       - "--providers.docker=true"
-      # Traefik will listen to incoming request on the port 80
+      # Traefik will listen to incoming request on the port 80 (HTTP) AND on port 443 (HTTPS)
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.file.directory=/configuration/"
+      - "--providers.file.watch=true"
     networks:
         - backend_network
     ports:
@@ -72,8 +76,11 @@ services:
       - "8080:8080"
     # Port 80 is where our feedback-suggestion-service is running
       - "80:80"
+      - "443:443"
     # Traefik needs the docker.sock to detect new docker container
     volumes:
+      - "/develop/dynamic_conf.yml:/configuration/dynamic_conf.yml"
+      - "/var/lib/rbg-cert/live/:/certificates/"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:

@@ -15,5 +15,5 @@ RUN mkdir -p /usr/src/app/logs/ && chown -R textemb:textemb /usr/src/app/
 VOLUME ["/usr/src/app/logs"]
 USER textemb
 
-EXPOSE 8000
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "src.main:app"]
+EXPOSE 80
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "80", "src.main:app"]

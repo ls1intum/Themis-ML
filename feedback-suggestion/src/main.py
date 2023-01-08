@@ -1,7 +1,7 @@
 import sys
 import logging
 from fastapi import FastAPI, Request, Response, BackgroundTasks
-from src import feedback_suggestion_ressource
+from src.feedback_suggestion import FeedbackSuggestionRequest
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -12,4 +12,11 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 app = FastAPI()
-app.include_router(feedback_suggestion_ressource.router)
+app.include_router(FeedbackSuggestionRequest.router)
+
+@app.get("/")
+def hello_world_message():
+    logger.debug("-" * 80)
+    logger.info("Hello World message requested!")
+
+    return "Hello World, this is the Themis Feedback Suggestions Server!"
