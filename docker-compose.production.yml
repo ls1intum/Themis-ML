@@ -68,7 +68,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--configFile=/etc/traefik/traefik.yml"
-      - "--providers.file.filename=/etc/traefik/trafik-certs.yml"
+      - "--providers.file.filename=/etc/traefik/traefik-certs.yml"
       - "--providers.file.watch=true"
     networks:
         - backend_network
