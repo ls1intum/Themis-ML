@@ -1,17 +1,27 @@
 # Docker configuration backend
 providers:
   docker:
+    network: backend_network
     exposedbydefault: false
     endpoint: "unix:///var/run/docker.sock"
+  file:
+    filename: /traefik-certs.yml
+    watch: true
 
 # Entrypoint configuration
 entryPoints:
   web:
     address: ":80"
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
 
   websecure:
     address: ":443"
 
 # API and dashboard configuration
 api:
+  dashboard: true
   insecure: true

@@ -1,0 +1,13 @@
+---
+# Dynamic configuration
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certificates/host:intum:vmbhatotia156.cert.pem
+        keyFile: /certificates/host:intum:vmbhatotia156.privkey.pem
+  certificates:
+    - certFile: /certificates/host:intum:vmbhatotia156.cert.pem
+      keyFile: /certificates/host:intum:vmbhatotia156.privkey.pem
+      stores:
+        - default
