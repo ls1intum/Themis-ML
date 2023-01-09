@@ -48,6 +48,7 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
       # copy the sql script to create tables
+      # change to ~/develop/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
       - /develop/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
 # http://localhost:8080/dashboard
@@ -81,7 +82,7 @@ services:
     # Traefik needs the docker.sock to detect new docker container
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/develop/traefik/:/etc/traefik"
+      - "~/develop/traefik/:/etc/traefik"
       - "/var/lib/rbg-cert/live/:/certificates"
 
 volumes:
