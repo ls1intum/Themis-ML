@@ -79,9 +79,10 @@ services:
       - "443:443"
     # Traefik needs the docker.sock to detect new docker container
     volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/develop/traefik.yml:/configuration/traefik.yml"
       - "/develop/dynamic_conf.yml:/configuration/dynamic_conf.yml"
       - "/var/lib/rbg-cert/live/:/certificates/"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:
   database:
