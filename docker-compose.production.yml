@@ -80,7 +80,7 @@ services:
     # Traefik needs the docker.sock to detect new docker container
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/develop/traefik.yml:/configuration/traefik.yml"
+      - "/develop/traefik.yml:/etc/traefik/traefik.yml"
       - "/develop/dynamic_conf.yml:/configuration/dynamic_conf.yml"
       - "/var/lib/rbg-cert/live/:/certificates/"
 
