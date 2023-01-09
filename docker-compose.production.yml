@@ -83,7 +83,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "~/develop/traefik/:/etc/traefik"
-      - "/var/lib/rbg-cert/live/:/certificates"
+      - "~/develop/certificates/:/certificates"
 
 volumes:
   database:
