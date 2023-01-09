@@ -5,7 +5,7 @@ providers:
     exposedbydefault: false
     endpoint: "unix:///var/run/docker.sock"
   file:
-    filename: /traefik-certs.yml
+    filename: /etc/traefik/traefik-certs.yml
     watch: true
 
 # Entrypoint configuration

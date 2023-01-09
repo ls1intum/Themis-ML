@@ -67,7 +67,8 @@ services:
       # Traefik will listen to incoming request on the port 80 (HTTP) AND on port 443 (HTTPS)
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--providers.file.filename=/trafik-certs.yml"
+      - "--configFile=/etc/traefik/traefik.yml"
+      - "--providers.file.filename=/etc/traefik/trafik-certs.yml"
       - "--providers.file.watch=true"
     networks:
         - backend_network
@@ -80,8 +81,7 @@ services:
     # Traefik needs the docker.sock to detect new docker container
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/develop/traefik.yml:/traefik.yml"
-      - "/develop/traeefik-certs.yml:/traefik-certs.yml"
+      - "/develop/traefik/:/etc/traefik"
       - "/var/lib/rbg-cert/live/:/certificates"
 
 volumes:
