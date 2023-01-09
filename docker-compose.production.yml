@@ -14,7 +14,7 @@ services:
     #ports:
     #  - "80:80"
     expose:
-       - 80
+       - 8000
     environment:
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
@@ -33,7 +33,7 @@ services:
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.routers.backend.entrypoints=websecure"
       # We need to define the service and specify, on which port our server is reachable
-      - "traefik.http.services.backend-service.loadbalancer.server.port=80"
+      - "traefik.http.services.backend-service.loadbalancer.server.port=8000"
       # We have to add this service to our router "backend". That's how the router knows where to forward the requests
       - "traefik.http.routers.backend.service=backend-service"
 
