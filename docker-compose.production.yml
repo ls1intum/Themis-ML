@@ -27,6 +27,7 @@ services:
     networks:
       - backend_network
     labels:
+      - "traefik.enable=true"
       # The domain the service will respond to (use localhost for local testing and ios2223cit.ase.cit.tum.de for production!)
       - "traefik.http.routers.backend.rule=Host(`ios2223cit.ase.cit.tum.de`)"
       # Allow request only from the predefined entry point named "web"
