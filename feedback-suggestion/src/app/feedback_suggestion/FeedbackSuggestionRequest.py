@@ -1,6 +1,6 @@
 from logging import getLogger
 from fastapi import APIRouter
-from ..database import FeedbackSuggestionEntity
+from ..database.FeedbackSuggestionEntity import FeedbackSuggestionEntity
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
