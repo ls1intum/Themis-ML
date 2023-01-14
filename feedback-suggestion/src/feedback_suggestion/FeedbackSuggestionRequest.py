@@ -1,7 +1,9 @@
+import sys
+sys.path.insert(0, '../src')
 import json
 from logging import getLogger
 from fastapi import APIRouter, Request
-from src.database import FeedbackSuggestionEntity
+from src.database.FeedbackSuggestionEntity import FeedbackSuggestionEntity
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
