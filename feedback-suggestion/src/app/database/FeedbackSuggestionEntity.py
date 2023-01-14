@@ -6,11 +6,11 @@ from sqlalchemy import create_engine
 class FeedbackSuggestionEntity:
 
     def __init__(self):
-        DB_USER = os.environ.get('DB_USER', 'feedback_suggestion_user')
-        DB_PASSWORD = os.environ.get('DB_PASSWORD', 'password')
-        DB_HOST = os.environ.get('DB_HOST', 'localhost')
-        DB_PORT = os.environ.get('DB_PORT', '5432')
-        DB_NAME = os.environ.get('DB_NAME', 'feedback_suggestion_db')
+        DB_USER = os.environ.get('DATABASE_USER', 'feedback_suggestion_user')
+        DB_PASSWORD = os.environ.get('DATABASE_PASSWORD', 'password')
+        DB_HOST = os.environ.get('DATABASE_HOST', 'localhost')
+        DB_PORT = os.environ.get('DATABASE_PORT', '5432')
+        DB_NAME = os.environ.get('DATABASE_NAME', 'feedback_suggestion_db')
         db_link = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
         self.engine = create_engine(db_link)
 
