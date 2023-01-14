@@ -31,7 +31,7 @@ if __name__ == '__main__':
     from pprint import pprint
     from pathlib import Path
 
-    with open(Path("./test.java")) as f:
+    with open(Path("test.java")) as f:
         code = f.read()
         print("Methods: ")
         pprint(list(map(str, extract_methods(code))))
