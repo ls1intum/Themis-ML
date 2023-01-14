@@ -45,6 +45,7 @@ services:
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
     ports:
       - '5432:5432'
     networks:
@@ -52,8 +53,7 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
       # copy the sql script to create tables
-      # change to ~/develop/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-      - /develop/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - "~/develop/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql"
 
 # http://localhost:8080/dashboard
   traefik:
