@@ -16,7 +16,8 @@ class FeedbackSuggestionEntity:
 
     def insert_name(self, first_name, last_name, email):
         with self.engine.connect() as conn:
-            conn.execute("INSERT INTO developers (first_name, last_name, email) VALUES (%s, %s, %s)", (first_name, last_name, email))
+            conn.execute("INSERT INTO developers (first_name, last_name, email) VALUES (%s, %s, %s)",
+                         (first_name, last_name, email))
             print('Data inserted successfully')
 
     def fetch_name(self):
