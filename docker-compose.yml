@@ -1,8 +1,8 @@
 version: '3.8'
  
 services:
-# http://localhost:80/docs
-# http://localhost:80/
+  # http://localhost:80/docs
+  # http://localhost:80/
   feedback-suggestion:
     build:
       context: .
@@ -50,7 +50,7 @@ services:
       # copy the sql script to create tables
       - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
-# http://localhost:8080/dashboard
+  # http://localhost:8080/dashboard
   traefik:
     container_name: "traefik"
     image: "traefik:v2.9"

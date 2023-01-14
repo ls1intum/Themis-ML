@@ -1,7 +1,7 @@
 import sys
 import logging
-from fastapi import FastAPI, Request, Response, BackgroundTasks
-from src.feedback_suggestion import FeedbackSuggestionRequest
+from fastapi import FastAPI
+from .feedback_suggestion import FeedbackSuggestionRequest
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -13,6 +13,7 @@ logger.addHandler(handler)
 
 app = FastAPI()
 app.include_router(FeedbackSuggestionRequest.router)
+
 
 @app.get("/")
 def hello_world_message():
