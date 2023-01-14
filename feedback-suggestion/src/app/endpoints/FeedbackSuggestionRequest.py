@@ -45,7 +45,7 @@ class NotifyRequest(BaseModel):
 
 
 @router.post("/feedback_suggestion/notify")
-def fetch_name(request: NotifyRequest):
+def load_feedbacks(request: NotifyRequest):
     logger.debug("-" * 80)
     logger.info("Notified about new feedback!")
 
@@ -55,23 +55,17 @@ def fetch_name(request: NotifyRequest):
 
     response = auth_request.get(f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
     res_json = response.json()
-    print(res_json)
     if "feedbacks" not in res_json:
         raise HTTPException(status_code=400, detail="No feedbacks for assessment found. Assessment might not be submitted.")
     feedbacks = [ReceivedFeedback(f["text"], f["detailText"], f["credits"]) for f in res_json["feedbacks"] if f["type"] == "MANUAL"]
-    print(feedbacks)
 
     method_feedbacks = []
     for filepath, content in files.items():
         methods: List[MethodNode] = extract_methods(content)
-        print(methods)
         for method in methods:
             start = method.get_start_line()
             stop = method.get_stop_line()
             for feedback in feedbacks:
-                print(feedback.file, filepath)
-                print(feedback.from_line, feedback.to_line)
-                print(start, stop)
                 if feedback.file == filepath.split("/")[-1] and feedback.from_line >= start and feedback.to_line <= stop:
                     method_feedbacks.append(
                         Feedback(
@@ -86,8 +80,6 @@ def fetch_name(request: NotifyRequest):
                         )
                     )
     db.store_feedbacks(method_feedbacks)
-
-    db.fetch_feedbacks()
 
     return "Success!"
 
@@ -112,3 +104,9 @@ class ReceivedFeedback():
         else:
             line_num = int(self.text.split()[-3])
             return line_num, line_num
+
+
+
+@router.get("/feedback_suggestions/feedbacks")
+def get_feedbacks():
+    return db.fetch_feedbacks()

@@ -31,10 +31,8 @@ class FeedbackSuggestionEntity:
     def fetch_feedbacks(self):
         with self.engine.connect() as conn:
             result = conn.execute("SELECT * FROM feedbacks")
-            all_devs = result.fetchall()
-            print('Data fetched successfully')
-            print(all_devs)
-            return all_devs
+            all_feedbacks = result.fetchall()
+            return all_feedbacks
 
     def store_feedbacks(self, feedbacks: List[Feedback]):
         with self.engine.connect() as conn:
