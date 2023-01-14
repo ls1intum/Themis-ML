@@ -5,7 +5,6 @@ from ..database.FeedbackSuggestionEntity import FeedbackSuggestionEntity
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
 
-
 @router.get("/feedback_suggestion/insert")
 def insert_name():
     logger.debug("-" * 80)
