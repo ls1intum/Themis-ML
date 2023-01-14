@@ -7,3 +7,16 @@ CREATE TABLE IF NOT EXISTS developers (
   EMAIL varchar(250),
   PRIMARY KEY (DEVELOPER_ID)
 );
+
+CREATE TABLE IF NOT EXISTS feedbacks (
+  id SERIAL PRIMARY KEY,
+  exercise_id INT NOT NULL,
+  participation_id INT NOT NULL,
+  code TEXT NOT NULL,
+  src_file TEXT NOT NULL,
+  from_line INT NOT NULL,
+  to_line INT NOT NULL,
+  feedback_text TEXT NOT NULL,
+  credits FLOAT NOT NULL
+);
+

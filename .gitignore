@@ -10,3 +10,4 @@ ENV/
 env.bak/
 venv.bak/
 pythonenv*
+__pycache__
