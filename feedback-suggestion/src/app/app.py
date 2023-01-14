@@ -1,7 +1,7 @@
 import sys
 import logging
 from fastapi import FastAPI
-from .feedback_suggestion import FeedbackSuggestionRequest
+from .endpoints import FeedbackSuggestionRequest
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)

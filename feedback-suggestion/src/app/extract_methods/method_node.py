@@ -1,7 +1,4 @@
-from zss import Node
-
-
-class MethodNode(Node):
+class MethodNode:
     start = None
     stop = None
 

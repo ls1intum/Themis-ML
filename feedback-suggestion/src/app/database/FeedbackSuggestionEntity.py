@@ -1,7 +1,8 @@
 import os
 
 from sqlalchemy import create_engine
-
+from ..endpoints.feedback import Feedback
+from typing import List
 
 class FeedbackSuggestionEntity:
 
@@ -26,3 +27,11 @@ class FeedbackSuggestionEntity:
             print('Data fetched successfully')
             print(all_devs)
             return all_devs
+
+    def store_feedbacks(self, feedbacks: List[Feedback]):
+        with self.engine.connect() as conn:
+            for feedback in feedbacks:                                
+                conn.execute(
+                    "INSERT INTO feedbacks (exercise_id, participation_id, code, src_file, from_line, to_line, text) VALUES (%d, %d, %s, %s, %d, %d, %s)", 
+                    (feedback.exercise_id, feedback.participation_id, feedback.code, feedback.src_file, feedback.from_line, feedback.to_line, feedback.text)
+                )
