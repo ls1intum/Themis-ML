@@ -55,25 +55,30 @@ def fetch_name(request: NotifyRequest):
 
     response = auth_request.get(f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
     res_json = response.json()
+    print(res_json)
     if "feedbacks" not in res_json:
         raise HTTPException(status_code=400, detail="No feedbacks for assessment found. Assessment might not be submitted.")
-    feedbacks = filter(lambda f:f["type"] == "MANUAL", response.json()["feedbacks"])
-    feedbacks = map(lambda f: ReceivedFeedback(f["text"], f["detailText"], f["credits"]), feedbacks)
+    feedbacks = [ReceivedFeedback(f["text"], f["detailText"], f["credits"]) for f in res_json["feedbacks"] if f["type"] == "MANUAL"]
+    print(feedbacks)
 
     method_feedbacks = []
-    for filename, content in files.items():
+    for filepath, content in files.items():
         methods: List[MethodNode] = extract_methods(content)
+        print(methods)
         for method in methods:
             start = method.get_start_line()
             stop = method.get_stop_line()
             for feedback in feedbacks:
-                if feedback.file == filename and feedback.from_line >= start and feedback.to_line <= stop:
+                print(feedback.file, filepath)
+                print(feedback.from_line, feedback.to_line)
+                print(start, stop)
+                if feedback.file == filepath.split("/")[-1] and feedback.from_line >= start and feedback.to_line <= stop:
                     method_feedbacks.append(
                         Feedback(
                             exercise_id=request.exercise_id,
                             participation_id=request.participation_id,
                             code=method.get_source_code(),
-                            src_file=filename,
+                            src_file=filepath,
                             from_line=start,
                             to_line=stop,
                             text=feedback.detailText,
@@ -81,6 +86,8 @@ def fetch_name(request: NotifyRequest):
                         )
                     )
     db.store_feedbacks(method_feedbacks)
+
+    db.fetch_feedbacks()
 
     return "Success!"
 
@@ -94,13 +101,14 @@ class ReceivedFeedback():
         self.from_line, self.to_line = self.parse_lines()
 
     def parse_filename(self):
-        return self.text.split("/")[-1]
+        return self.text.split()[0]
 
     def parse_lines(self):
         if "at Lines:" in self.text:
             lines = self.text.split()[-1]
             line_nums = lines.split("-")
-            return int(line_nums[0]), int(line_nums[1])
+            # TODO: remove off by one after reference is implemented by themis
+            return int(line_nums[0]) + 1, int(line_nums[1]) + 1
         else:
             line_num = int(self.text.split()[-3])
             return line_num, line_num
