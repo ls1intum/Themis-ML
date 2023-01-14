@@ -66,9 +66,6 @@ def load_feedbacks(request: NotifyRequest):
             start = method.get_start_line()
             stop = method.get_stop_line()
             for feedback in feedbacks:
-                print(filepath, feedback.file)
-                print(start, feedback.from_line)
-                print(stop, feedback.to_line)
                 if feedback.file == "/" + filepath and feedback.from_line >= start and feedback.to_line <= stop:
                     method_feedbacks.append(
                         Feedback(
