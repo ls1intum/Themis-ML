@@ -66,15 +66,18 @@ def load_feedbacks(request: NotifyRequest):
             start = method.get_start_line()
             stop = method.get_stop_line()
             for feedback in feedbacks:
-                if feedback.file == filepath.split("/")[-1] and feedback.from_line >= start and feedback.to_line <= stop:
+                print(filepath, feedback.file)
+                print(start, feedback.from_line)
+                print(stop, feedback.to_line)
+                if feedback.file == "/" + filepath and feedback.from_line >= start and feedback.to_line <= stop:
                     method_feedbacks.append(
                         Feedback(
                             exercise_id=request.exercise_id,
                             participation_id=request.participation_id,
                             code=method.get_source_code(),
                             src_file=filepath,
-                            from_line=start,
-                            to_line=stop,
+                            from_line=feedback.from_line,
+                            to_line=feedback.to_line,
                             text=feedback.detailText,
                             credits=feedback.credits
                         )
@@ -88,19 +91,17 @@ class ReceivedFeedback():
         self.text = text
         self.detailText = detailText
         self.credits = credits
-        # TODO: use reference text to parse
         self.file = self.parse_filename()
         self.from_line, self.to_line = self.parse_lines()
 
     def parse_filename(self):
-        return self.text.split()[0]
+        return self.text.split()[1]
 
     def parse_lines(self):
-        if "at Lines:" in self.text:
+        if "at lines" in self.text:
             lines = self.text.split()[-1]
             line_nums = lines.split("-")
-            # TODO: remove off by one after reference is implemented by themis
-            return int(line_nums[0]) + 1, int(line_nums[1]) + 1
+            return int(line_nums[0]), int(line_nums[1])
         else:
             line_num = int(self.text.split()[-3])
             return line_num, line_num
