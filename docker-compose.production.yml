@@ -40,12 +40,15 @@ services:
 
   database:
     image: postgres:15.1-alpine
+    container_name: database
     restart: unless-stopped
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     ports:
       - '5432:5432'
+    networks:
+      - backend_network
     volumes:
       - database:/var/lib/postgresql/data
       # copy the sql script to create tables
