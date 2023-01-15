@@ -35,13 +35,13 @@ def get_feedback_suggestions(self, request: FeedbackSuggestionsRequest):
         function_blocks[filepath] = extract_methods(content)
     
     # get all feedbacks for the submission
-    db_feedbacks = FeedbackSuggestionRequest.get_feedbacks()
+    db_feedbacks = FeedbackSuggestionRequest.get_feedbacks().filter(exercise_id=request.exercise_id)
     
     # compare feedbacks with function blocks
     suggestedFeedbacks = []
-    for fileName, methods in function_blocks:
+    for filepath, methods in function_blocks:
         for feedback in db_feedbacks:
-            if feedback.exercise_id == request.exercise_id and feedback.filepath == fileName:
+            if feedback.filepath == "/" + filepath:
                 for method in methods:
                     score = 0   # TODO: compute similarity between feedback and function block
                     if (score >= SIMILARITY_SCORE_THRESHOLD):
