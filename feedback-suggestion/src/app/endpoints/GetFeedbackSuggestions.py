@@ -35,7 +35,7 @@ def get_feedback_suggestions(self, request: FeedbackSuggestionsRequest):
         function_blocks[filepath] = extract_methods(content)
     
     # get all feedbacks for the submission
-    db_feedbacks = FeedbackSuggestionRequest.get_feedbacks().filter(exercise_id=request.exercise_id)
+    db_feedbacks = FeedbackSuggestionRequest.get_feedbacks_for_exercise(request.exercise_id)
     
     # compare feedbacks with function blocks
     suggestedFeedbacks = []

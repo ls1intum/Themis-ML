@@ -35,6 +35,12 @@ class FeedbackSuggestionEntity:
             all_feedbacks = result.fetchall()
             return all_feedbacks
 
+    def fetch_feedbacks_by_exercise_id(self, exercise_id):
+        with self.engine.connect() as conn:
+            result = conn.execute("SELECT * FROM feedbacks WHERE exercise_id = %s", (exercise_id))
+            all_feedbacks = result.fetchall()
+            return all_feedbacks
+
     def store_feedbacks(self, feedbacks: List[Feedback]):
         with self.engine.connect() as conn:
             for feedback in feedbacks:                                
