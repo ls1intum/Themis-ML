@@ -6,6 +6,7 @@ from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
 from ..endpoints.FeedbackSuggestionRequest import FeedbackSuggestionRequest
 from fastapi import APIRouter, HTTPException
+from code_bert_score import score
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
@@ -43,8 +44,9 @@ def get_feedback_suggestions(self, request: FeedbackSuggestionsRequest):
         for feedback in db_feedbacks:
             if feedback.filepath == "/" + filepath:
                 for method in methods:
-                    score = 0   # TODO: compute similarity between feedback and function block
-                    if (score >= SIMILARITY_SCORE_THRESHOLD):
+                    # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
+                    precision, recall, F1, F3 = score(cands=method, refs=feedback.code, lang='java')
+                    if (F1 >= SIMILARITY_SCORE_THRESHOLD):
                         suggestedFeedbacks.append(feedback)
     
     return suggestedFeedbacks
