@@ -4,3 +4,4 @@ uvicorn==0.20.0
 psycopg2==2.9.5
 antlr4-python3-runtime==4.11.1
 SQLAlchemy==1.4.46
+git+https://github.com/neulab/code-bert-score.git@main
