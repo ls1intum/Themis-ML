@@ -20,7 +20,7 @@ class AuthRequest:
         response = requests.get(server)
         if not response.ok:
             raise ConnectionError("Connection to artemis server failed")
-        if hasattr(response.headers, "Content-Version"):
+        if "Content-Version" in response.headers:
             return version.parse(response.headers["Content-Version"])
         else:
             raise AttributeError("No Content-Version attribute in response headers")

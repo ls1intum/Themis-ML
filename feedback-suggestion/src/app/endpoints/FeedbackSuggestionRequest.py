@@ -104,10 +104,10 @@ class ReceivedFeedback():
             return line_num, line_num
 
 
-
 @router.get("/feedback_suggestions/feedbacks")
 def get_feedbacks():
     return db.fetch_feedbacks()
+
 
 @router.get("/feedback_suggestions/feedbacks/{exercise_id}")
 def get_feedbacks_for_exercise(exercise_id):
