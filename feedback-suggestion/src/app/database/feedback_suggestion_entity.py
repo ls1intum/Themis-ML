@@ -35,10 +35,17 @@ class FeedbackSuggestionEntity:
             all_feedbacks = result.fetchall()
             return all_feedbacks
 
+    def fetch_feedbacks_by_exercise_id(self, exercise_id):
+        with self.engine.connect() as conn:
+            result = conn.execute("SELECT * FROM feedbacks WHERE exercise_id = %s", (exercise_id))
+            all_feedbacks = result.fetchall()
+            return all_feedbacks
+
     def store_feedbacks(self, feedbacks: List[Feedback]):
         with self.engine.connect() as conn:
             for feedback in feedbacks:                                
                 conn.execute(
-                    "INSERT INTO feedbacks (exercise_id, participation_id, code, src_file, from_line, to_line, feedback_text, credits) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", 
+                    "INSERT INTO feedbacks (exercise_id, participation_id, code, src_file, from_line, to_line, "
+                    "feedback_text, credits) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     (feedback.exercise_id, feedback.participation_id, feedback.code, feedback.src_file, feedback.from_line, feedback.to_line, feedback.text, feedback.credits)
                 )
