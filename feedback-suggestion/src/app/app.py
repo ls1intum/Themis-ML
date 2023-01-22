@@ -1,7 +1,7 @@
 import sys
 import logging
 from fastapi import FastAPI
-from .endpoints import FeedbackSuggestionRequest
+from .endpoints import feedback_suggestion_request, feedback_suggestions
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -12,7 +12,8 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 app = FastAPI()
-app.include_router(FeedbackSuggestionRequest.router)
+app.include_router(feedback_suggestion_request.router)
+app.include_router(feedback_suggestions.router)
 
 
 @app.get("/")

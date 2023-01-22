@@ -1,6 +1,6 @@
 from logging import getLogger
 from fastapi import APIRouter, HTTPException
-from ..database.FeedbackSuggestionEntity import FeedbackSuggestionEntity
+from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from .authenticated_request import AuthRequest
 from pydantic import BaseModel
 from ..extract_methods.extract_methods import extract_methods
@@ -51,13 +51,16 @@ def load_feedbacks(request: NotifyRequest):
 
     auth_request = AuthRequest(request.token, request.server)
     response = auth_request.get(f"/repository/{request.participation_id}/files-content")
-    files: dict = { name: content for name, content in response.json().items() if name.endswith(".java") }
+    files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}
 
-    response = auth_request.get(f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
+    response = auth_request.get(
+        f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
     res_json = response.json()
     if "feedbacks" not in res_json:
-        raise HTTPException(status_code=400, detail="No feedbacks for assessment found. Assessment might not be submitted.")
-    feedbacks = [ReceivedFeedback(f["text"], f["detailText"], f["credits"]) for f in res_json["feedbacks"] if f["type"] == "MANUAL"]
+        raise HTTPException(status_code=400,
+                            detail="No feedbacks for assessment found. Assessment might not be submitted.")
+    feedbacks = [ReceivedFeedback(f["text"], f["detailText"], f["credits"]) for f in res_json["feedbacks"] if
+                 f["type"] == "MANUAL"]
 
     method_feedbacks = []
     for filepath, content in files.items():
@@ -83,10 +86,11 @@ def load_feedbacks(request: NotifyRequest):
 
     return "Success!"
 
-class ReceivedFeedback():
-    def __init__(self, text, detailText, credits):
+
+class ReceivedFeedback:
+    def __init__(self, text, detail_text, credits):
         self.text = text
-        self.detailText = detailText
+        self.detailText = detail_text
         self.credits = credits
         self.file = self.parse_filename()
         self.from_line, self.to_line = self.parse_lines()
@@ -111,4 +115,4 @@ def get_feedbacks():
 
 @router.get("/feedback_suggestions/feedbacks/{exercise_id}")
 def get_feedbacks_for_exercise(exercise_id):
-    return db.fetch_feedbacks_for_exercise(exercise_id)
+    return db.fetch_feedbacks_by_exercise_id(exercise_id)
