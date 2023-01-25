@@ -29,7 +29,6 @@ def say_hello(response: Response):
 def get_repository(participation_id: int):
     return get_test_submission(participation_id)
 
-
 @app.get("/api/programming-exercise-participations/{participation_id}/latest-result-with-feedbacks")
 def get_latest_result_with_feedbacks(participation_id: int):
     return {
@@ -46,4 +45,3 @@ def get_ids(exercise_id: int):
 def notify_for_all(exercise_id: int):
     for participation_id in get_participation_ids(exercise_id):
         notify_themis_ml(exercise_id, participation_id)
-    return "Done"
