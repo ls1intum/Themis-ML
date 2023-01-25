@@ -53,7 +53,7 @@ def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
                     # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
                     precision, recall, F1, F3 = score(cands=[method.get_source_code()], refs=[feedback.code],
                                                       lang='java')
-                    similarity_score = torch.mean(F1)  # TODO: is this correct?
+                    similarity_score = float(torch.mean(F1))  # TODO: is this correct?
                     if similarity_score >= SIMILARITY_SCORE_THRESHOLD:
                         print(f"Found similar code with similarity score {similarity_score}: {feedback}")
                         original_code = feedback.code
@@ -62,7 +62,7 @@ def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
                         feedback_to_give["from_line"] = method.get_start_line()
                         feedback_to_give["to_line"] = method.get_stop_line()
                         suggested_feedbacks.append({
-                            "feedback": feedback,
+                            "feedback": feedback_to_give,
                             "originally_on_code": original_code,
                             "similarity_score": similarity_score
                         })
