@@ -38,4 +38,9 @@ def get_test_submission(id: int) -> dict:
     filepaths to file contents."""
     zip_path = get_test_submission_path(id)
     with zipfile.ZipFile(zip_path, "r") as zip_file:
-        return {name: zip_file.read(name).decode("latin-1") for name in zip_file.namelist() if ".git" not in name}
+        files = {}
+        for name in zip_file.namelist():
+            if name.startswith("__MACOSX"):
+                continue
+            files[name] = zip_file.read(name).decode("latin-1")
+        return files
