@@ -50,6 +50,7 @@ def load_feedbacks(request: NotifyRequest):
     logger.info("Notified about new feedback!")
 
     auth_request = AuthRequest(request.token, request.server)
+    # Make sure to not reveal sensitive information before this request!
     response = auth_request.get(f"/repository/{request.participation_id}/files-content")
     files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}
 
@@ -82,6 +83,8 @@ def load_feedbacks(request: NotifyRequest):
                             credits=feedback.credits
                         )
                     )
+    # remove feedbacks for this participation before inserting new ones
+    db.delete_feedbacks(request.participation_id)
     db.store_feedbacks(method_feedbacks)
 
     return "Success!"
