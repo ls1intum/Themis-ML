@@ -10,9 +10,9 @@ def get_random_feedbacks(id: int) -> List[dict]:
     print("Submission:", submission)
     feedbacks = []
     for file_path, file_content in submission.items():
-        if not file_path.endswith(".java"):
+        if not file_path.name.endswith(".java"):
             continue
-        if file_path.endswith("BinarySearch.java"):
+        if file_path.name == "BinarySearch.java":
             for line_number, line in enumerate(file_content.splitlines()):
                 if "return -2;" in line and "// there will be feedback for this" in line:
                     feedbacks.append(

@@ -19,7 +19,7 @@ def _get_methods_in_tree(tree):
     listener = MethodParserListener(JAVA_METHOD_DECLARATIONS)
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
-    return listener.methods
+    return listener.methods.copy()
 
 
 def extract_methods(source_code: str):
