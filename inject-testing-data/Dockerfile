@@ -1,13 +1,13 @@
 FROM python:3.9.16
 
 # Install app dependencies
-COPY ./inject-test-data/requirements.txt /tmp/requirements.txt
+COPY ./inject-testing-data/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -qr /tmp/requirements.txt
 
 # Create app directory
 WORKDIR /usr/src/app
 
-COPY ./inject-test-data/src/ src/
+COPY ./inject-testing-data/src/ src/
 
 # Run the image as a non-root user
 RUN groupadd -r textemb && useradd --no-log-init -r -g textemb textemb
