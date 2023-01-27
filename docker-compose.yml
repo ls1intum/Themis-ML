@@ -29,7 +29,7 @@ services:
     labels:
       - "traefik.enable=true"
       # The domain the service will respond to
-      - "traefik.http.routers.feedback-suggestion.rule=Host(`localhost`) && (Path(`/`) || PathPrefix(`/feedback_suggestions`))"
+      - "traefik.http.routers.feedback-suggestion.rule=Host(`localhost`) && PathPrefix(`/feedback_suggestions`)"
       # Allow request only from the predefined entry point named "web"
       - "traefik.http.routers.feedback-suggestion.entrypoints=web"
       # We need to define the service and specify, on which port our server is reachable
@@ -60,7 +60,7 @@ services:
     labels:
       - "traefik.enable=true"
       # The domain the service will respond to
-      - "traefik.http.routers.inject-testing-data.rule=Host(`localhost`) && PathPrefix(`/inject`)"
+      - "traefik.http.routers.inject-testing-data.rule=Host(`localhost`) && (Path(`/`) || PathPrefix(`/inject`))"
       # Allow request only from the predefined entry point named "web"
       - "traefik.http.routers.inject-testing-data.entrypoints=web"
       # We need to define the service and specify, on which port our server is reachable
