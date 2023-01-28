@@ -27,14 +27,46 @@ services:
     networks:
       - backend_network
     labels:
-      # The domain the service will respond to (use localhost for local testing and ios2223cit.ase.cit.tum.de for production!)
-      - "traefik.http.routers.backend.rule=Host(`localhost`)"
+      - "traefik.enable=true"
+      # The domain the service will respond to
+      - "traefik.http.routers.feedback-suggestion.rule=Host(`localhost`) && PathPrefix(`/feedback_suggestions`)"
       # Allow request only from the predefined entry point named "web"
-      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.feedback-suggestion.entrypoints=web"
       # We need to define the service and specify, on which port our server is reachable
-      - "traefik.http.services.backend-service.loadbalancer.server.port=8000"
-      # We have to add this service to our router "backend". That's how the router knows where to forward the  requests
-      - "traefik.http.routers.backend.service=backend-service"
+      - "traefik.http.services.feedback-suggestion-service.loadbalancer.server.port=8000"
+      # We have to add this service to our router "feedback-suggestion". That's how the router knows where to forward the requests
+      - "traefik.http.routers.feedback-suggestion.service=feedback-suggestion-service"
+
+  inject-testing-data:
+    build:
+      context: .
+      dockerfile: ./inject-testing-data/Dockerfile
+    container_name: "inject-testing-data"
+    depends_on:
+      - database
+    expose:
+      - 8001
+    environment:
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    working_dir: /usr/src/app
+    volumes:
+      - './:/src'
+    networks:
+      - backend_network
+    labels:
+      - "traefik.enable=true"
+      # The domain the service will respond to
+      - "traefik.http.routers.inject-testing-data.rule=Host(`localhost`) && (Path(`/`) || PathPrefix(`/inject`))"
+      # Allow request only from the predefined entry point named "web"
+      - "traefik.http.routers.inject-testing-data.entrypoints=web"
+      # We need to define the service and specify, on which port our server is reachable
+      - "traefik.http.services.inject-testing-data-service.loadbalancer.server.port=8001"
+      # We have to add this service to our router "inject-testing-data". That's how the router knows where to forward the requests
+      - "traefik.http.routers.inject-testing-data.service=inject-testing-data-service"
 
   database:
     image: postgres:15.1-alpine
@@ -59,6 +91,7 @@ services:
     image: "traefik:v2.9"
     depends_on:
       - feedback-suggestion
+      - inject-testing-data
     command:
       # Enable Debug output
       - "--log.level=DEBUG"
@@ -74,7 +107,7 @@ services:
     ports:
     # Port 8080 is where the api traefik dashboard is located
       - "8080:8080"
-    # Port 80 is where our feedback-suggestion-service is running
+    # Port 80 is where our feedback-suggestion-service and inject-testing-data-service is running
       - "80:80"
     # Traefik needs the docker.sock to detect new docker container
     volumes:
