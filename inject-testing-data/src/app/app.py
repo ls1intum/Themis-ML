@@ -25,24 +25,24 @@ def say_hello(response: Response):
     return "This route is needed for the auth check not to fail."
 
 
-@app.get("/api/repository/{id}/files-content")
+@app.get("/inject/api/repository/{id}/files-content")
 def get_repository(id: int):
     return get_test_submission(id)
 
 
-@app.get("/api/programming-exercise-participations/{id}/latest-result-with-feedbacks")
+@app.get("/inject/api/programming-exercise-participations/{id}/latest-result-with-feedbacks")
 def get_latest_result_with_feedbacks(id: int):
     return {
         "feedbacks": get_random_feedbacks(id)
     }
 
 
-@app.get("/ids")
+@app.get("/inject/ids")
 def get_ids():
     return get_test_submission_ids()
 
 
-@app.get("/notify_for_all")
+@app.get("/inject/notify_for_all")
 def notify_for_all():
     for id in get_test_submission_ids():
         notify_themis_ml(id)
