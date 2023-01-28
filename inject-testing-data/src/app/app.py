@@ -4,7 +4,7 @@ import sys
 from fastapi import FastAPI, Response
 
 from .notify import notify_themis_ml
-from .comment_feedback import get_comment_feedbacks
+from .generate_feedback import generate_feedback
 from .test_submissions import get_test_submission, get_participation_ids
 
 logger = logging.getLogger()
@@ -29,10 +29,11 @@ def say_hello(response: Response):
 def get_repository(participation_id: int):
     return get_test_submission(participation_id)
 
+
 @app.get("/api/programming-exercise-participations/{participation_id}/latest-result-with-feedbacks")
 def get_latest_result_with_feedbacks(participation_id: int):
     return {
-        "feedbacks": get_comment_feedbacks(participation_id)
+        "feedbacks": generate_feedback(participation_id)
     }
 
 
