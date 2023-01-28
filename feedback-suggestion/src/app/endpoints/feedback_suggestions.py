@@ -27,7 +27,6 @@ class FeedbackSuggestionsRequest(BaseModel):
 
 @router.post("/feedback_suggestion")
 def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
-    print(request)
     logger.debug("-" * 80)
     logger.info("Start getting feedback suggestions!")
 
