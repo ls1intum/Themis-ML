@@ -22,10 +22,12 @@ class FeedbackSuggestionsRequest(BaseModel):
     server: str
     exercise_id: int
     participation_id: int
+    include_code: bool = False
 
 
 @router.post("/feedback_suggestion")
 def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
+    print(request)
     logger.debug("-" * 80)
     logger.info("Start getting feedback suggestions!")
 
@@ -58,13 +60,18 @@ def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
                         print(f"Found similar code with similarity score {similarity_score}: {feedback}")
                         original_code = feedback.code
                         feedback_to_give = dict(feedback)
-                        feedback_to_give["code"] = method.get_source_code()
+                        if request.include_code:
+                            feedback_to_give["code"] = method.get_source_code()
+                        else:
+                            del feedback_to_give["code"]
                         feedback_to_give["from_line"] = method.get_start_line()
                         feedback_to_give["to_line"] = method.get_stop_line()
-                        suggested_feedbacks.append({
+                        result_data = {
                             "feedback": feedback_to_give,
-                            "originally_on_code": original_code,
                             "similarity_score": similarity_score
-                        })
+                        }
+                        if request.include_code:
+                            result_data["originally_on_code"] = original_code
+                        suggested_feedbacks.append(result_data)
 
     return suggested_feedbacks
