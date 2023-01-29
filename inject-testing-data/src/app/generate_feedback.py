@@ -6,7 +6,7 @@ from .test_submissions import get_test_submission
 
 # add a feedback by adding a comment with "// feedback: <feedback text>" to the submission
 # Change this to your needs. If you want feedback on all Java methods, you could use the regex from
-# https://stackoverflow.com/a/847507/4306257
+# https://stackoverflow.com/a/847507/4306257 (without the r modifier on the string)
 FEEDBACK_REGEX = r"// feedback: (.*)"
 # You can use the following placeholders in the feedback text:
 #   $0: The whole regex match
@@ -35,7 +35,7 @@ def generate_feedback(participation_id: int) -> List[dict]:
                     feedback_text = feedback_text.replace(f"${i}", group)
                 feedbacks.append(
                     {
-                        "text": f"File /{file_path} at line {line_number} injected feedback",
+                        "text": f"File /{file_path} at line {line_number + 1} injected feedback",
                         "detailText": feedback_text,
                         "credits": -1.0,
                         "type": "MANUAL",
