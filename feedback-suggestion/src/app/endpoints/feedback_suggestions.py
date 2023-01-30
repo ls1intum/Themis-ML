@@ -22,6 +22,7 @@ class FeedbackSuggestionsRequest(BaseModel):
     server: str
     exercise_id: int
     participation_id: int
+    include_code: bool = False
 
 
 @router.post("/feedback_suggestion")
@@ -46,13 +47,30 @@ def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
     suggested_feedbacks = []
     for filepath, methods in function_blocks.items():
         for feedback in db_feedbacks:
+            if feedback.participation_id == request.participation_id:
+                continue
             if feedback.src_file == filepath:
                 for method in methods:
                     # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
                     precision, recall, F1, F3 = score(cands=[method.get_source_code()], refs=[feedback.code],
                                                       lang='java')
-                    similarity_score = torch.mean(F1)  # TODO: is this correct?
+                    similarity_score = float(torch.mean(F1))  # TODO: is this correct?
                     if similarity_score >= SIMILARITY_SCORE_THRESHOLD:
-                        suggested_feedbacks.append(feedback)
+                        print(f"Found similar code with similarity score {similarity_score}: {feedback}")
+                        original_code = feedback.code
+                        feedback_to_give = dict(feedback)
+                        if request.include_code:
+                            feedback_to_give["code"] = method.get_source_code()
+                        else:
+                            del feedback_to_give["code"]
+                        feedback_to_give["from_line"] = method.get_start_line()
+                        feedback_to_give["to_line"] = method.get_stop_line()
+                        result_data = {
+                            "feedback": feedback_to_give,
+                            "similarity_score": similarity_score
+                        }
+                        if request.include_code:
+                            result_data["originally_on_code"] = original_code
+                        suggested_feedbacks.append(result_data)
 
     return suggested_feedbacks

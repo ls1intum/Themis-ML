@@ -9,7 +9,7 @@ class MethodNode:
         return self.stop.line
 
     def get_source_code(self):
-        return self.start.source[1].strdata[self.start.start:self.stop.stop]
+        return self.start.source[1].strdata[self.start.start:self.stop.stop + 1]
 
     def __str__(self):
-        return f"MethodNode({repr(self.label)}), lines {self.get_start_line()} to {self.get_stop_line()}"
+        return f"MethodNode(lines {self.get_start_line()} to {self.get_stop_line()})"

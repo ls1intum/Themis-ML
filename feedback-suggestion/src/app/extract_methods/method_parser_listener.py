@@ -12,9 +12,8 @@ def capitalize_first_letter(s: str):
 
 
 class MethodParserListener(ParseTreeListener):
-    methods = []
-
     def __init__(self, method_declarations):
+        self.methods = []
         for method_name in method_declarations:
             name = f"enter{capitalize_first_letter(method_name)}"
             setattr(self, name, self.make_enter(method_name))

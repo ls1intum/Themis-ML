@@ -35,3 +35,7 @@ class FeedbackSuggestionEntity:
                     "feedback_text, credits) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     (feedback.exercise_id, feedback.participation_id, feedback.code, feedback.src_file, feedback.from_line, feedback.to_line, feedback.text, feedback.credits)
                 )
+
+    def delete_feedbacks(self, participation_id):
+        with self.engine.connect() as conn:
+            conn.execute("DELETE FROM feedbacks WHERE participation_id = %s", participation_id)
