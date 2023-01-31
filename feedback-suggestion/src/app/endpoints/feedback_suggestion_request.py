@@ -4,7 +4,7 @@ from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from .authenticated_request import AuthRequest
 from pydantic import BaseModel
 from ..extract_methods.extract_methods import extract_methods
-from .feedback import Feedback
+from ..feedback_suggestion.feedback import Feedback
 from typing import List
 from ..extract_methods.method_node import MethodNode
 

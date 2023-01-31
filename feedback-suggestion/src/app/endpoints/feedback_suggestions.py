@@ -10,6 +10,7 @@ from .feedback_suggestion_request import get_feedbacks_for_exercise
 from .authenticated_request import AuthRequest
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
+from ..feedback_suggestion.feedback import Feedback
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
@@ -23,6 +24,39 @@ class FeedbackSuggestionsRequest(BaseModel):
     exercise_id: int
     participation_id: int
     include_code: bool = False
+
+
+def get_feedback_suggestions_for_feedback_row(
+        function_blocks: Dict[str, List[MethodNode]],
+        feedback: Feedback,
+        include_code: bool = False
+):
+    """Get feedback suggestions from comparisons between function blocks of a given submission
+    and a single feedback row."""
+    for filepath, methods in function_blocks.items():
+        if feedback.src_file == filepath:
+            for method in methods:
+                # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
+                precision, recall, F1, F3 = score(cands=[method.get_source_code()], refs=[feedback.code],
+                                                  lang='java')
+                similarity_score = float(torch.mean(F1))  # TODO: is this correct?
+                if similarity_score >= SIMILARITY_SCORE_THRESHOLD:
+                    print(f"Found similar code with similarity score {similarity_score}: {feedback}")
+                    original_code = feedback["code"]
+                    feedback_to_give = feedback.copy()
+                    if include_code:
+                        feedback_to_give["code"] = method.get_source_code()
+                    else:
+                        del feedback_to_give["code"]
+                    feedback_to_give["from_line"] = method.get_start_line()
+                    feedback_to_give["to_line"] = method.get_stop_line()
+                    result_data = {
+                        "feedback": feedback_to_give,
+                        "similarity_score": similarity_score
+                    }
+                    if include_code:
+                        result_data["originally_on_code"] = original_code
+                    yield result_data
 
 
 @router.post("/feedback_suggestion")
@@ -45,32 +79,16 @@ def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
 
     # compare feedbacks with function blocks
     suggested_feedbacks = []
-    for filepath, methods in function_blocks.items():
-        for feedback in db_feedbacks:
-            if feedback.participation_id == request.participation_id:
-                continue
-            if feedback.src_file == filepath:
-                for method in methods:
-                    # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
-                    precision, recall, F1, F3 = score(cands=[method.get_source_code()], refs=[feedback.code],
-                                                      lang='java')
-                    similarity_score = float(torch.mean(F1))  # TODO: is this correct?
-                    if similarity_score >= SIMILARITY_SCORE_THRESHOLD:
-                        print(f"Found similar code with similarity score {similarity_score}: {feedback}")
-                        original_code = feedback.code
-                        feedback_to_give = dict(feedback)
-                        if request.include_code:
-                            feedback_to_give["code"] = method.get_source_code()
-                        else:
-                            del feedback_to_give["code"]
-                        feedback_to_give["from_line"] = method.get_start_line()
-                        feedback_to_give["to_line"] = method.get_stop_line()
-                        result_data = {
-                            "feedback": feedback_to_give,
-                            "similarity_score": similarity_score
-                        }
-                        if request.include_code:
-                            result_data["originally_on_code"] = original_code
-                        suggested_feedbacks.append(result_data)
+    for feedback_row in db_feedbacks:
+        if feedback_row.participation_id == request.participation_id:
+            continue
+        feedback = Feedback.from_dict(dict(feedback_row))
+        suggested_feedbacks.extend(
+            list(get_feedback_suggestions_for_feedback_row(
+                function_blocks,
+                feedback,
+                include_code=request.include_code
+            ))
+        )
 
     return suggested_feedbacks
