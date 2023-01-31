@@ -34,7 +34,7 @@ to the respective line:
 
 This will be picked up as feedback and stored in the database.
 To actually notify the ThemisML server of the change (and store the feedback),
-visit http://localhost:8001/notify_for_exercise/<exercise_id> in your browser.
+visit http://localhost:8001/inject/notify_for_exercise/<exercise_id> in your browser.
 This will notify the ThemisML server of all submissions for the given exercise ID.
 
 It will fetch the feedback and the Test Injection Server will respond with your
@@ -49,7 +49,7 @@ http://localhost:8000/feedback_suggestion. Include a JSON body of
 ```
 {
     "token": "not_needed_here",
-    "server": "http://localhost:8001",
+    "server": "http://localhost:8001/inject",
     "exercise_id": <some id>,
     "participation_id": <some other id>,
     "include_code": true

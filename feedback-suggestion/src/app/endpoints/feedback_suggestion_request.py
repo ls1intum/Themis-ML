@@ -32,6 +32,11 @@ def load_feedbacks(request: NotifyRequest):
 
     response = auth_request.get(
         f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
+    if response.status_code == 404:
+        raise HTTPException(status_code=404,
+                            detail="No result found for assessment. Assessment might not be submitted.")
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
     res_json = response.json()
     if "feedbacks" not in res_json:
         raise HTTPException(status_code=400,
