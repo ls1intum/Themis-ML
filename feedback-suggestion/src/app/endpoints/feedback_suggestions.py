@@ -5,12 +5,13 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from .authenticated_request import AuthRequest
-from .feedback_suggestion_request import get_feedbacks_for_exercise
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
 from ..feedback_suggestion.feedback import Feedback
-from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions_for_feedback
+from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions_for_multiple_feedbacks
+from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 
+db = FeedbackSuggestionEntity()
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
 
@@ -38,20 +39,11 @@ def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
         filepath: extract_methods(content) for filepath, content in files.items()
     }
 
-    # get all feedbacks for the submission
-    db_feedbacks = get_feedbacks_for_exercise(request.exercise_id)
+    db_feedbacks = db.fetch_feedbacks_by_exercise_id(request.exercise_id)
+    # remove own participation
+    db_feedbacks = [f for f in db_feedbacks if f.participation_id != request.participation_id]
 
-    # compare feedbacks with function blocks
-    suggested_feedbacks = []
-    for feedback_row in db_feedbacks:
-        if feedback_row.participation_id == request.participation_id:
-            continue
-        suggested_feedbacks.extend(
-            list(get_feedback_suggestions_for_feedback(
-                function_blocks,
-                Feedback.from_dict(dict(feedback_row)),
-                include_code=request.include_code
-            ))
-        )
+    suggested_feedbacks = get_feedback_suggestions_for_multiple_feedbacks(
+        function_blocks, db_feedbacks, request.include_code)
 
     return suggested_feedbacks

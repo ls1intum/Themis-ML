@@ -36,6 +36,3 @@ class Feedback:
             "text": self.text,
             "credits": self.credits
         }
-
-    def copy(self):
-        return Feedback.from_dict(self.to_dict())

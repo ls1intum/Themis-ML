@@ -48,15 +48,15 @@ def load_feedbacks(request: NotifyRequest):
     for filepath, content in files.items():
         methods: List[MethodNode] = extract_methods(content)
         for method in methods:
-            start = method.get_start_line()
-            stop = method.get_stop_line()
+            start = method.start_line
+            stop = method.stop_line
             for feedback in feedbacks:
                 if feedback.file == "/" + filepath and feedback.from_line >= start and feedback.to_line <= stop:
                     method_feedbacks.append(
                         Feedback(
                             exercise_id=request.exercise_id,
                             participation_id=request.participation_id,
-                            code=method.get_source_code(),
+                            code=method.source_code,
                             src_file=filepath,
                             from_line=feedback.from_line,
                             to_line=feedback.to_line,
