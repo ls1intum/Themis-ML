@@ -1,12 +1,14 @@
 from logging import getLogger
-from fastapi import APIRouter, HTTPException
-from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
-from .authenticated_request import AuthRequest
-from pydantic import BaseModel
-from ..extract_methods.extract_methods import extract_methods
-from ..feedback_suggestion.feedback import Feedback
 from typing import List
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+from .authenticated_request import AuthRequest
+from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
+from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
+from ..feedback_suggestion.feedback import Feedback
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()

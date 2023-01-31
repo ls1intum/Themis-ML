@@ -3,8 +3,8 @@ import sys
 
 from fastapi import FastAPI, Response, APIRouter
 
-from .notify import notify_themis_ml
 from .generate_feedback import generate_feedback
+from .notify import notify_themis_ml
 from .test_submissions import get_test_submission, get_participation_ids
 
 logger = logging.getLogger()

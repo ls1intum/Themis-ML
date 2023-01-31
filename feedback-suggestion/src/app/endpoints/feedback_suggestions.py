@@ -5,11 +5,10 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from .authenticated_request import AuthRequest
+from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
-from ..feedback_suggestion.feedback import Feedback
 from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions_for_multiple_feedbacks
-from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 
 db = FeedbackSuggestionEntity()
 logger = getLogger(name="FeedbackSuggestionRequest")
