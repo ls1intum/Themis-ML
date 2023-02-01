@@ -101,12 +101,14 @@ class ReceivedFeedback:
             lines = self.text.split()[-1]
             line_nums = lines.split("-")
             return int(line_nums[0]), int(line_nums[1])
-        if "at line" in self.text:
+        elif "at line" in self.text and "column" in self.text:
+            line_num = int(self.text.split()[-3])
+            return line_num, line_num
+        elif "at line" in self.text:
             line_num = int(self.text.split()[-1])
             return line_num, line_num
         else:
-            line_num = int(self.text.split()[-3])
-            return line_num, line_num
+            return 0, 0
 
     def __str__(self):
         return f"Feedback: {self.text} ({self.from_line}, {self.to_line})"

@@ -23,7 +23,7 @@ class AuthRequest:
         if "Content-Version" in response.headers:
             return version.parse(response.headers["Content-Version"])
         else:
-            raise AttributeError("No Content-Version attribute in response headers")
+            raise AttributeError(f"No Content-Version attribute in response headers {response.headers}")
 
     def get(self, path, params=None):
         print(f"GET request to {self.api_path + path} with params {params} and cookies {self.cookies} and headers {self.headers}")
