@@ -94,7 +94,11 @@ class ReceivedFeedback:
         self.from_line, self.to_line = self.parse_lines()
 
     def parse_filename(self):
-        return self.text.split()[1]
+        filename = self.text.split()[1]
+        # unify
+        if filename.startswith("/"):
+            filename = filename[1:]
+        return filename
 
     def parse_lines(self):
         if "at lines" in self.text:
