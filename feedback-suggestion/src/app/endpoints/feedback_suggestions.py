@@ -35,7 +35,7 @@ def get_feedback_suggestions(
 
     # get all files of the submission and its contents (source code)
     auth_request = AuthRequest(token, request.server)
-    response = auth_request.get(f"/repository/{request.participation_id}/files-content")
+    response = auth_request.get(f"/api/repository/{request.participation_id}/files-content")
     files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}
 
     # generate function blocks from all files of the submission

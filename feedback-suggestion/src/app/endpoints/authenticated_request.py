@@ -26,6 +26,7 @@ class AuthRequest:
             raise AttributeError("No Content-Version attribute in response headers")
 
     def get(self, path, params=None):
+        print(f"GET request to {self.api_path + path} with params {params} and cookies {self.cookies} and headers {self.headers}")
         if params is None:
             params = {}
         return requests.get(self.api_path + path, headers=self.headers, cookies=self.cookies, params=params)
