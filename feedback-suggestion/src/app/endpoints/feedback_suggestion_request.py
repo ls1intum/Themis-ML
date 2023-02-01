@@ -1,9 +1,10 @@
 from logging import getLogger
-from typing import List
+from typing import List, Union
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 
+from .auth_token import get_auth_token
 from .authenticated_request import AuthRequest
 from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
@@ -16,18 +17,22 @@ db = FeedbackSuggestionEntity()
 
 
 class NotifyRequest(BaseModel):
-    token: str
     exercise_id: int
     participation_id: int
     server: str
 
 
 @router.post("/feedback_suggestion/notify")
-def load_feedbacks(request: NotifyRequest):
+def load_feedbacks(
+    request: NotifyRequest,
+    authorization: Union[str, None] = Header()
+):
     logger.debug("-" * 80)
     logger.info("Notified about new feedback!")
 
-    auth_request = AuthRequest(request.token, request.server)
+    token = get_auth_token(authorization)
+
+    auth_request = AuthRequest(token, request.server)
     # Make sure to not reveal sensitive information before this request!
     response = auth_request.get(f"/repository/{request.participation_id}/files-content")
     files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}

@@ -1,9 +1,10 @@
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict, List, Union
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 from pydantic import BaseModel
 
+from .auth_token import get_auth_token
 from .authenticated_request import AuthRequest
 from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
@@ -16,7 +17,6 @@ router = APIRouter()
 
 
 class FeedbackSuggestionsRequest(BaseModel):
-    token: str
     server: str
     exercise_id: int
     participation_id: int
@@ -24,12 +24,17 @@ class FeedbackSuggestionsRequest(BaseModel):
 
 
 @router.post("/feedback_suggestion")
-def get_feedback_suggestions(request: FeedbackSuggestionsRequest):
+def get_feedback_suggestions(
+        request: FeedbackSuggestionsRequest,
+        authorization: Union[str, None] = Header()
+):
     logger.debug("-" * 80)
     logger.info("Start getting feedback suggestions!")
 
+    token = get_auth_token(authorization)
+
     # get all files of the submission and its contents (source code)
-    auth_request = AuthRequest(request.token, request.server)
+    auth_request = AuthRequest(token, request.server)
     response = auth_request.get(f"/repository/{request.participation_id}/files-content")
     files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}
 

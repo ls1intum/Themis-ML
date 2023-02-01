@@ -48,11 +48,11 @@ To get a feedback suggestion, send a POST request to
 http://localhost:8000/feedback_suggestion. Include a JSON body of 
 ```
 {
-    "token": "not_needed_here",
-    "server": "http://localhost:8001/inject",
+    "server": "http://localhost:8001",
     "exercise_id": <some id>,
     "participation_id": <some other id>,
     "include_code": true
 }
 ```
+And an `Authorization` header with the value `Bearer <your Artemis token>`.
 The `server` property will instruct ThemisML to think of the Inject Testing Data server as the Artemis server.
