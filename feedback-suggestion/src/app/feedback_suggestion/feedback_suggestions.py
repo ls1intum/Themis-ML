@@ -8,7 +8,7 @@ from .feedback import Feedback
 from ..extract_methods.method_node import MethodNode
 
 # TODO: define threshold for similarity
-SIMILARITY_SCORE_THRESHOLD = 0.5
+SIMILARITY_SCORE_THRESHOLD = 0.85
 
 
 def get_feedback_suggestions_for_feedback(

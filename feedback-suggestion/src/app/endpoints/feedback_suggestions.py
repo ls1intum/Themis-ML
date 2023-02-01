@@ -10,6 +10,7 @@ from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
 from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions_for_multiple_feedbacks
+from ..helpers.slash import ensure_leading_slash
 
 db = FeedbackSuggestionEntity()
 logger = getLogger(name="FeedbackSuggestionRequest")
@@ -42,7 +43,7 @@ def get_feedback_suggestions(
 
     # generate function blocks from all files of the submission
     function_blocks: Dict[str, List[MethodNode]] = {
-        filepath: extract_methods(content) for filepath, content in files.items()
+        ensure_leading_slash(filepath): extract_methods(content) for filepath, content in files.items()
     }
 
     db_feedbacks = db.fetch_feedbacks_by_exercise_id(request.exercise_id)

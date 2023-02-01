@@ -10,6 +10,7 @@ from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
 from ..feedback_suggestion.feedback import Feedback
+from ..helpers.slash import ensure_leading_slash
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
@@ -38,7 +39,11 @@ def load_feedbacks(
     if not response.ok:
         print("Error with status code", response.status_code)
         raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
-    files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}
+    files: dict = {
+        ensure_leading_slash(name): content
+        for name, content in response.json().items()
+        if name.endswith(".java")
+    }
 
     response = auth_request.get(
         f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
@@ -51,8 +56,15 @@ def load_feedbacks(
     if "feedbacks" not in res_json:
         raise HTTPException(status_code=400,
                             detail="No feedbacks for assessment found. Assessment might not be submitted.")
-    feedbacks = [ReceivedFeedback(f["text"], f["detailText"], f["credits"]) for f in res_json["feedbacks"] if
-                 f["type"] == "MANUAL"]
+    feedbacks = [
+        ReceivedFeedback(
+            f["text"],
+            f["detailText"],
+            f["credits"]
+        )
+        for f in res_json["feedbacks"]
+        if f["type"] == "MANUAL"
+    ]
 
     print("All found feedbacks:", feedbacks)
 
@@ -96,8 +108,8 @@ class ReceivedFeedback:
     def parse_filename(self):
         filename = self.text.split()[1]
         # unify
-        if filename.startswith("/"):
-            filename = filename[1:]
+        if not filename.startswith("/"):
+            filename = "/" + filename
         return filename
 
     def parse_lines(self):
