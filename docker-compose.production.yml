@@ -22,9 +22,11 @@ services:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - ML_JAVA_MODEL=/usr/src/models/codebert-java
     working_dir: /usr/src/app
     volumes:
-      - './:/src'
+      - ./:/src
+      - ~/code-models:/usr/src/models
     networks:
       - backend_network
     labels:
