@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import Dict, List, Union
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header
 from pydantic import BaseModel
 
 from .auth_token import get_auth_token
@@ -10,6 +10,7 @@ from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
 from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions_for_multiple_feedbacks
+from ..helpers.request_error_handling import check_artemis_response
 from ..helpers.slash import ensure_leading_slash
 
 db = FeedbackSuggestionEntity()
@@ -37,8 +38,7 @@ def get_feedback_suggestions(
     # get all files of the submission and its contents (source code)
     auth_request = AuthRequest(token, request.server)
     response = auth_request.get(f"/repository/{request.participation_id}/files-content")
-    if not response.ok:
-        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
+    check_artemis_response(response)
     files: dict = {name: content for name, content in response.json().items() if name.endswith(".java")}
 
     # generate function blocks from all files of the submission

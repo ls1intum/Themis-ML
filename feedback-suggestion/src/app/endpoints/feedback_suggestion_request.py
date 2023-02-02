@@ -10,6 +10,7 @@ from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
 from ..feedback_suggestion.feedback import Feedback
+from ..helpers.request_error_handling import check_artemis_response, check_assessment_response
 from ..helpers.slash import ensure_leading_slash
 
 logger = getLogger(name="FeedbackSuggestionRequest")
@@ -21,14 +22,6 @@ class NotifyRequest(BaseModel):
     exercise_id: int
     participation_id: int
     server: str
-
-
-def check_assessment_response(response):
-    if response.status_code == 404:
-        raise HTTPException(status_code=404,
-                            detail="No result found for assessment. Assessment might not be submitted.")
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
 
 
 @router.post("/feedback_suggestions/notify")
@@ -44,9 +37,7 @@ def load_feedbacks(
     auth_request = AuthRequest(token, request.server)
     # Make sure to not reveal sensitive information before this request!
     response = auth_request.get(f"/repository/{request.participation_id}/files-content")
-    if not response.ok:
-        print("Error with status code", response.status_code)
-        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
+    check_artemis_response(response)
     files: dict = {
         ensure_leading_slash(name): content
         for name, content in response.json().items()
