@@ -1,7 +1,8 @@
 from logging import getLogger
 from typing import Dict, List, Union
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter
+from fastapi import Header
 from pydantic import BaseModel
 
 from .auth_token import get_auth_token

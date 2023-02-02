@@ -48,7 +48,7 @@ To get a feedback suggestion, send a POST request to
 http://localhost:8000/feedback_suggestions. Include a JSON body of 
 ```
 {
-    "server": "http://localhost:8001",
+    "server": "http://localhost:8001/inject",
     "exercise_id": <some id>,
     "participation_id": <some other id>,
     "include_code": true
