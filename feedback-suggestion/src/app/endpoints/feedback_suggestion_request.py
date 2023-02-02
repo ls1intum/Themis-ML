@@ -23,10 +23,18 @@ class NotifyRequest(BaseModel):
     server: str
 
 
+def check_assessment_response(response):
+    if response.status_code == 404:
+        raise HTTPException(status_code=404,
+                            detail="No result found for assessment. Assessment might not be submitted.")
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
+
+
 @router.post("/feedback_suggestions/notify")
 def load_feedbacks(
-    request: NotifyRequest,
-    authorization: Union[str, None] = Header()
+        request: NotifyRequest,
+        authorization: Union[str, None] = Header()
 ):
     logger.debug("-" * 80)
     logger.info("Notified about new feedback!")
@@ -47,11 +55,7 @@ def load_feedbacks(
 
     response = auth_request.get(
         f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
-    if response.status_code == 404:
-        raise HTTPException(status_code=404,
-                            detail="No result found for assessment. Assessment might not be submitted.")
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
+    check_assessment_response(response)
     res_json = response.json()
     if "feedbacks" not in res_json:
         raise HTTPException(status_code=400,
