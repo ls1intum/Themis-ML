@@ -3,7 +3,7 @@ import os
 import requests
 
 THEMIS_URL = os.environ.get("THEMIS_URL", "http://localhost:8000")
-TEST_SERVER_URL = os.environ.get("TEST_SERVER_URL", "http://localhost:8001")
+TEST_SERVER_URL = os.environ.get("TEST_SERVER_URL", "http://localhost:8001") + "/inject"
 
 
 def notify_themis_ml(exercise_id: int, participation_id: int):
