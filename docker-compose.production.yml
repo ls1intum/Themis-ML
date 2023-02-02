@@ -26,7 +26,7 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./:/src
-      - ~/code-models:/usr/src/models
+      - ~/develop/code-models:/usr/src/models
     networks:
       - backend_network
     labels:
