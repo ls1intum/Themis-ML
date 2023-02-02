@@ -20,9 +20,11 @@ class MethodParserListener(ParseTreeListener):
 
     def make_enter(self, name):
         def enter(ctx=None):
-            me = MethodNode()
-            me.start = ctx.start
-            me.stop = ctx.stop
+            me = MethodNode(
+                start_line=ctx.start.line,
+                stop_line=ctx.stop.line,
+                source_code=ctx.getText()
+            )
             self.methods.append(me)
 
         return enter

@@ -3,7 +3,6 @@ from typing import List
 
 from .test_submissions import get_test_submission
 
-
 # add a feedback by adding a comment with "// feedback: <feedback text>" to the submission
 # Change this to your needs. If you want feedback on all Java methods, you could use the regex from
 # https://stackoverflow.com/a/847507/4306257 (without the r modifier on the string)

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS feedbacks (
   src_file TEXT NOT NULL,
   from_line INT NOT NULL,
   to_line INT NOT NULL,
-  feedback_text TEXT NOT NULL,
+  text TEXT NOT NULL,
   credits FLOAT NOT NULL
 );
 

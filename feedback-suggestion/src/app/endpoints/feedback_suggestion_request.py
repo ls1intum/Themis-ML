@@ -1,12 +1,14 @@
 from logging import getLogger
-from fastapi import APIRouter, HTTPException
-from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
-from .authenticated_request import AuthRequest
-from pydantic import BaseModel
-from ..extract_methods.extract_methods import extract_methods
-from .feedback import Feedback
 from typing import List
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+from .authenticated_request import AuthRequest
+from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
+from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
+from ..feedback_suggestion.feedback import Feedback
 
 logger = getLogger(name="FeedbackSuggestionRequest")
 router = APIRouter()
@@ -32,6 +34,11 @@ def load_feedbacks(request: NotifyRequest):
 
     response = auth_request.get(
         f"/programming-exercise-participations/{request.participation_id}/latest-result-with-feedbacks")
+    if response.status_code == 404:
+        raise HTTPException(status_code=404,
+                            detail="No result found for assessment. Assessment might not be submitted.")
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Error on Artemis server: " + response.text)
     res_json = response.json()
     if "feedbacks" not in res_json:
         raise HTTPException(status_code=400,
@@ -43,15 +50,15 @@ def load_feedbacks(request: NotifyRequest):
     for filepath, content in files.items():
         methods: List[MethodNode] = extract_methods(content)
         for method in methods:
-            start = method.get_start_line()
-            stop = method.get_stop_line()
+            start = method.start_line
+            stop = method.stop_line
             for feedback in feedbacks:
                 if feedback.file == "/" + filepath and feedback.from_line >= start and feedback.to_line <= stop:
                     method_feedbacks.append(
                         Feedback(
                             exercise_id=request.exercise_id,
                             participation_id=request.participation_id,
-                            code=method.get_source_code(),
+                            code=method.source_code,
                             src_file=filepath,
                             from_line=feedback.from_line,
                             to_line=feedback.to_line,
