@@ -11,6 +11,8 @@ COPY ./feedback-suggestion/src/ src/
 
 # Run the image as a non-root user
 RUN groupadd -r textemb && useradd --no-log-init -r -g textemb textemb
+RUN chown -R textemb:textemb /home/textemb
+RUN chmod -R 755 /home/textemb
 RUN mkdir -p /usr/src/app/logs/ && chown -R textemb:textemb /usr/src/app/
 VOLUME ["/usr/src/app/logs"]
 USER textemb
