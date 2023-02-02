@@ -11,6 +11,7 @@ services:
     container_name: "feedback-suggestion"
     depends_on:
       - database
+    restart: always
     #ports:
     #  - "80:80"
     expose:

@@ -9,6 +9,7 @@ services:
       dockerfile: ./feedback-suggestion/Dockerfile
     image: "harbor.ase.in.tum.de/ios2223cit/server:latest"
     container_name: "feedback-suggestion"
+    restart: always
     depends_on:
       - database
     #ports:
