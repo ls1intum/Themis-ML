@@ -34,7 +34,7 @@ def generate_feedback(participation_id: int) -> List[dict]:
                     feedback_text = feedback_text.replace(f"${i}", group)
                 feedbacks.append(
                     {
-                        "text": f"File /{file_path} at line {line_number + 1} injected feedback",
+                        "text": f"File {file_path} at line {line_number + 1}",
                         "detailText": feedback_text,
                         "credits": -1.0,
                         "type": "MANUAL",

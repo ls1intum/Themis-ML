@@ -1,15 +1,14 @@
-from typing import Dict, List, Iterator
 from multiprocessing import Pool, cpu_count
+from typing import Dict, List, Iterator
 
 import torch
 from code_bert_score import score
 
 from .feedback import Feedback
-
 from ..extract_methods.method_node import MethodNode
 
 # TODO: define threshold for similarity
-SIMILARITY_SCORE_THRESHOLD = 0.5
+SIMILARITY_SCORE_THRESHOLD = 0.85
 
 
 def get_feedback_suggestions_for_feedback(
@@ -38,7 +37,7 @@ def get_feedback_suggestions_for_feedback(
                     feedback_to_give["from_line"] = method.start_line
                     feedback_to_give["to_line"] = method.stop_line
                     result_data = {
-                        "feedback": feedback_to_give,
+                        **feedback_to_give,
                         "similarity_score": similarity_score
                     }
                     if include_code:
