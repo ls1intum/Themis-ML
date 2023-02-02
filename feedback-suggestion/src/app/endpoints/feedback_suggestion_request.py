@@ -23,7 +23,7 @@ class NotifyRequest(BaseModel):
     server: str
 
 
-@router.post("/feedback_suggestion/notify")
+@router.post("/feedback_suggestions/notify")
 def load_feedbacks(
     request: NotifyRequest,
     authorization: Union[str, None] = Header()
@@ -131,13 +131,3 @@ class ReceivedFeedback:
 
     def __repr__(self):
         return self.__str__()
-
-
-@router.get("/feedback_suggestions/feedbacks")
-def get_feedbacks():
-    return db.fetch_feedbacks()
-
-
-@router.get("/feedback_suggestions/feedbacks/{exercise_id}")
-def get_feedbacks_for_exercise(exercise_id):
-    return db.fetch_feedbacks_by_exercise_id(exercise_id)

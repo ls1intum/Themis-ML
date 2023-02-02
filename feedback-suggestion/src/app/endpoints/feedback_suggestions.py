@@ -24,7 +24,7 @@ class FeedbackSuggestionsRequest(BaseModel):
     include_code: bool = False
 
 
-@router.post("/feedback_suggestion")
+@router.post("/feedback_suggestions")
 def get_feedback_suggestions(
         request: FeedbackSuggestionsRequest,
         authorization: Union[str, None] = Header()

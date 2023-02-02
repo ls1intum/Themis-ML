@@ -45,7 +45,7 @@ Open the `feedback` database in Postgres to verify that the feedback was added.
 
 ## Getting a Feedback Suggestion
 To get a feedback suggestion, send a POST request to 
-http://localhost:8000/feedback_suggestion. Include a JSON body of 
+http://localhost:8000/feedback_suggestions. Include a JSON body of 
 ```
 {
     "server": "http://localhost:8001",

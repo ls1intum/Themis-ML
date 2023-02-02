@@ -9,7 +9,7 @@ TEST_SERVER_URL = os.environ.get("TEST_SERVER_URL", "http://localhost:8001") + "
 def notify_themis_ml(exercise_id: int, participation_id: int):
     """Notify the ML service about a new submission."""
     resp = requests.post(
-        f"{THEMIS_URL}/feedback_suggestion/notify",
+        f"{THEMIS_URL}/feedback_suggestions/notify",
         json={
             "exercise_id": exercise_id,
             "participation_id": participation_id,
