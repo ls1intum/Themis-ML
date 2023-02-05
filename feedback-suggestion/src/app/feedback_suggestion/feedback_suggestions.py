@@ -72,7 +72,7 @@ def get_feedback_suggestions_for_method(
             if include_code:
                 result_data["originally_on_code"] = original_code
             suggested.append(result_data)
-    return suggested
+    return sorted(suggested, key=lambda x: x["similarity_score"], reverse=True)
 
 
 def get_feedback_suggestions(
