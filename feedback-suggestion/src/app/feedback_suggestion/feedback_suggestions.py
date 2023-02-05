@@ -1,3 +1,4 @@
+import os
 from multiprocessing import Pool, cpu_count
 from typing import Dict, List, Iterator
 
@@ -9,6 +10,16 @@ from ..extract_methods.method_node import MethodNode
 
 # TODO: define threshold for similarity
 SIMILARITY_SCORE_THRESHOLD = 0.85
+
+
+def get_model_params(lang: str) -> dict:
+    if "ML_JAVA_MODEL" in os.environ:
+        if os.path.exists(os.environ["ML_JAVA_MODEL"]):
+            print("Using local model")
+            return dict(model_type=os.environ["ML_JAVA_MODEL"])
+        else:
+            print("Local model not found, using default model")
+    return dict(lang=lang)
 
 
 def get_feedback_suggestions_for_feedback(
@@ -23,8 +34,11 @@ def get_feedback_suggestions_for_feedback(
         if feedback.src_file == filepath:
             for method in methods:
                 # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
-                precision, recall, F1, F3 = score(cands=[method.source_code], refs=[feedback.code],
-                                                  lang='java')
+                precision, recall, F1, F3 = score(
+                    cands=[method.source_code],
+                    refs=[feedback.code],
+                    **get_model_params("java")
+                )
                 similarity_score = float(torch.mean(F1))  # TODO: is this correct?
                 if similarity_score >= SIMILARITY_SCORE_THRESHOLD:
                     print(f"Found similar code with similarity score {similarity_score}: {feedback}")
