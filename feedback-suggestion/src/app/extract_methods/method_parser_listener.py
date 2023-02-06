@@ -23,7 +23,8 @@ class MethodParserListener(ParseTreeListener):
             me = MethodNode(
                 start_line=ctx.start.line,
                 stop_line=ctx.stop.line,
-                source_code=ctx.getText()
+                # need to do it like this so that spaces are included:
+                source_code=ctx.start.source[1].getText(ctx.start.start, ctx.stop.stop)
             )
             self.methods.append(me)
 
