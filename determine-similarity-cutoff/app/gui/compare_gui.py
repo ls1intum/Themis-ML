@@ -1,14 +1,21 @@
 import time
 from tkinter import *
+from typing import Callable, List
 
-from .feedback_suggestion import FeedbackSuggestion
+from .score_frame import ScoreFrame
+from ..feedback_suggestion import FeedbackSuggestion
 
 
 # shows suggestion.originally_on_code and suggestion.code side by side
 class CompareGUI:
     suggestion: FeedbackSuggestion
 
-    def __init__(self, master, on_accept, on_reject):
+    def __init__(
+            self, master,
+            on_accept, on_reject,
+            get_accepted: Callable[[], List[FeedbackSuggestion]],
+            get_rejected: Callable[[], List[FeedbackSuggestion]]
+    ):
         self.on_accept = on_accept
         self.on_reject = on_reject
 
@@ -40,6 +47,10 @@ class CompareGUI:
         self.reject_button = Button(self.button_frame, text="Reject", command=self.reject)
         self.reject_button.pack(side=LEFT)
 
+        self.score_frame = ScoreFrame(master, get_accepted, get_rejected)
+        self.score_frame.pack(side=TOP)
+        self.score_frame.update_score()
+
         # take focus
         self.master.focus_set()
 
@@ -60,8 +71,10 @@ class CompareGUI:
 
     def accept(self):
         self.on_accept(self.suggestion)
+        self.score_frame.update_score()
         self.button_visual_feedback()
 
     def reject(self):
         self.on_reject(self.suggestion)
+        self.score_frame.update_score()
         self.button_visual_feedback()

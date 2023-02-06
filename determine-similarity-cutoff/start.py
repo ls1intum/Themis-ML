@@ -61,5 +61,7 @@ if __name__ == "__main__":
     run_manual_comparison(
         get_given_suggestions(),
         add_accepted_suggestion,
-        add_rejected_suggestion
+        add_rejected_suggestion,
+        lambda: load_suggestions(ACCEPTED_SUGGESTIONS_FILE_NAME),
+        lambda: load_suggestions(REJECTED_SUGGESTIONS_FILE_NAME)
     )

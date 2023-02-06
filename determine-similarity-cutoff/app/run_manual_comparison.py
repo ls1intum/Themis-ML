@@ -1,20 +1,23 @@
 from tkinter import Tk
 from typing import List, Callable
 
-from .compare_gui import CompareGUI
 from .feedback_suggestion import FeedbackSuggestion
+from .gui.compare_gui import CompareGUI
 
 
 def run_manual_comparison(
         suggestions: List[FeedbackSuggestion],
         on_accept: Callable[[FeedbackSuggestion], None],
         on_reject: Callable[[FeedbackSuggestion], None],
+        get_accepted: Callable[[], List[FeedbackSuggestion]],
+        get_rejected: Callable[[], List[FeedbackSuggestion]]
 ):
     suggestions = suggestions.copy()
 
     def next_suggestion():
         if len(suggestions) == 0:
-            raise Exception("No more suggestions")
+            print("No more suggestions!")
+            return
         suggestion = suggestions.pop()
         gui.set_suggestion(suggestion)
 
@@ -34,7 +37,7 @@ def run_manual_comparison(
         do_and_next(on_reject, suggestion)
 
     root = Tk()
-    gui = CompareGUI(root, accept_and_next, reject_and_next)
+    gui = CompareGUI(root, accept_and_next, reject_and_next, get_accepted, get_rejected)
     next_suggestion()
     gui.master.mainloop()
     root.destroy()
