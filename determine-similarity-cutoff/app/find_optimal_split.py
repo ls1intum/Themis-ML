@@ -28,8 +28,9 @@ def find_optimal_split(
     # We can find the optimal split score by iterating over all scores and checking the
     # points = (#accepted with score > split) + (#rejected with score < split)
     def get_split_score_points(split_score: float) -> int:
-        return len([score > split_score for score in accepted_scores]) \
-            + len([score < split_score for score in rejected_scores])
+        accept_points = sum([int(score > split_score) for score in accepted_scores])
+        reject_points = sum([int(score < split_score) for score in rejected_scores])
+        return accept_points + reject_points
 
     max_points = None
     optimal_split_score = None

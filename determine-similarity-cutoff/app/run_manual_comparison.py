@@ -22,15 +22,20 @@ def run_manual_comparison(
     suggestions = suggestions.copy()
 
     def next_suggestion():
-        if len(suggestions) == 0:
-            print("No more suggestions!")
-            return
         suggestions.sort(
             key=lambda s: suggestion_distance_from_current_optimum(s, get_accepted(), get_rejected()),
             reverse=True
         )
-        suggestion = suggestions.pop()
+        # roughly only same function names:
+        suggestions_same_start = [s for s in suggestions if s.code[:10] == s.originally_on_code[:10]]
+        if len(suggestions_same_start) == 0:
+            print("No more suggestions!")
+            return
+        suggestion = suggestions_same_start.pop()
         gui.set_suggestion(suggestion)
+        if suggestion.code == suggestion.originally_on_code:
+            print("Skipping suggestion because it is the same as the original code")
+            accept_and_next(suggestion)
 
     def do_and_next(func, suggestion: FeedbackSuggestion):
         func(suggestion)
