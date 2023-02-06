@@ -2,7 +2,14 @@ from tkinter import Tk
 from typing import List, Callable
 
 from .feedback_suggestion import FeedbackSuggestion
+from .find_optimal_split import find_optimal_split
 from .gui.compare_gui import CompareGUI
+from .suggestion_score import suggestion_score
+
+
+def suggestion_distance_from_current_optimum(
+        suggestion: FeedbackSuggestion, accepted: List[FeedbackSuggestion], rejected: List[FeedbackSuggestion]):
+    return abs(suggestion.similarity_score - find_optimal_split(accepted, rejected, suggestion_score)[0])
 
 
 def run_manual_comparison(
@@ -18,6 +25,10 @@ def run_manual_comparison(
         if len(suggestions) == 0:
             print("No more suggestions!")
             return
+        suggestions.sort(
+            key=lambda s: suggestion_distance_from_current_optimum(s, get_accepted(), get_rejected()),
+            reverse=True
+        )
         suggestion = suggestions.pop()
         gui.set_suggestion(suggestion)
 

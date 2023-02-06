@@ -39,6 +39,9 @@ class CompareGUI:
         )
         self.explainer.pack(side=TOP)
 
+        self.score = Label(self.master, text="Score: 0")
+        self.score.pack(side=TOP)
+
         self.button_frame = Frame(master)
         self.button_frame.pack(side=TOP)
 
@@ -60,6 +63,7 @@ class CompareGUI:
         self.orig_code.insert(END, suggestion.originally_on_code)
         self.code.delete(1.0, END)
         self.code.insert(END, suggestion.code)
+        self.score.config(text="Score: " + str(suggestion.similarity_score))
 
     def button_visual_feedback(self):
         self.accept_button.config(state=DISABLED)
