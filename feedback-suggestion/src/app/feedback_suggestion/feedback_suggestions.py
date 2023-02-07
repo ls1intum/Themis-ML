@@ -29,13 +29,12 @@ def get_feedback_suggestions_for_method(
 ):
     """Get feedback suggestions from comparisons between a function block of a given submission
     and multiple feedback rows"""
-    candidates = []
-    refs = []
+    feedback_refs = []
     suggested = []
     for feedback in feedbacks:
         if feedback.src_file == filepath and feedback.method_name == method.name:
-            candidates.append(method.source_code)
-            refs.append(feedback.code)
+            feedback_refs.append(feedback)
+    candidates = [method.source_code] * len(feedback_refs)
 
     if len(candidates) == 0:
         return suggested
@@ -43,7 +42,8 @@ def get_feedback_suggestions_for_method(
     # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
     precision, recall, F1, F3 = score(
         cands=candidates,
-        refs=refs,
+        refs=[f.code for f in feedback_refs],
+        # device=torch.device("mps"),  # TODO: only works on mac
         **get_model_params("java")
     )
     precision_scores = precision.tolist()
@@ -51,7 +51,8 @@ def get_feedback_suggestions_for_method(
     similarity_scores_f3 = F3.tolist()
 
     for feedback, similarity_score_f1, similarity_score_f3, precision_score in zip(
-            feedbacks, similarity_scores_f1, similarity_scores_f3, precision_scores
+            feedback_refs, similarity_scores_f1, similarity_scores_f3, precision_scores,
+            strict=True
     ):
         if similarity_score_f1 >= SIMILARITY_SCORE_THRESHOLD:
             print(f"Found similar code with similarity score {similarity_score_f1}: {feedback}")

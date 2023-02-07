@@ -19,7 +19,7 @@ def find_optimal_split(
     :returns: a tuple (optimal_split_score, max_points)
     """
     if not accepted and not rejected:
-        raise ValueError("accepted and rejected are empty")
+        return 0.5, 0
 
     accepted_scores = [score_from_suggestion(suggestion) for suggestion in accepted]
     rejected_scores = [score_from_suggestion(suggestion) for suggestion in rejected]

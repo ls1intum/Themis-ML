@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class FeedbackSuggestion:
     exercise_id: int
     participation_id: int
+    method_name: str
     code: str
     originally_on_code: str
     src_file: str
@@ -20,6 +21,7 @@ class FeedbackSuggestion:
         return {
             "exercise_id": self.exercise_id,
             "participation_id": self.participation_id,
+            "method_name": self.method_name,
             "code": self.code,
             "originally_on_code": self.originally_on_code,
             "src_file": self.src_file,

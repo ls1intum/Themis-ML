@@ -26,12 +26,10 @@ def run_manual_comparison(
             key=lambda s: suggestion_distance_from_current_optimum(s, get_accepted(), get_rejected()),
             reverse=True
         )
-        # roughly only same function names:
-        suggestions_same_start = [s for s in suggestions if s.code[:10] == s.originally_on_code[:10]]
-        if len(suggestions_same_start) == 0:
+        if len(suggestions) == 0:
             print("No more suggestions!")
             return
-        suggestion = suggestions_same_start.pop()
+        suggestion = suggestions.pop()
         gui.set_suggestion(suggestion)
         if suggestion.code == suggestion.originally_on_code:
             print("Skipping suggestion because it is the same as the original code")
