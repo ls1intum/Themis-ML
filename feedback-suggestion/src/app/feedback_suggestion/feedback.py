@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class Feedback:
     exercise_id: int
     participation_id: int
+    method_name: str
     code: str
     src_file: str
     from_line: int
@@ -17,6 +18,7 @@ class Feedback:
         return Feedback(
             exercise_id=data["exercise_id"],
             participation_id=data["participation_id"],
+            method_name=data["method_name"],
             code=data["code"],
             src_file=data["src_file"],
             from_line=data["from_line"],
@@ -29,6 +31,7 @@ class Feedback:
         return {
             "exercise_id": self.exercise_id,
             "participation_id": self.participation_id,
+            "method_name": self.method_name,
             "code": self.code,
             "src_file": self.src_file,
             "from_line": self.from_line,

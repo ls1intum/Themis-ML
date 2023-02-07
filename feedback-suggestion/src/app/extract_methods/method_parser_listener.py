@@ -23,8 +23,14 @@ class MethodParserListener(ParseTreeListener):
             me = MethodNode(
                 start_line=ctx.start.line,
                 stop_line=ctx.stop.line,
-                source_code=ctx.getText()
+                # need to do it like this so that spaces are included:
+                source_code=ctx.start.source[1].getText(ctx.start.start, ctx.stop.stop),
+                name=None  # will be written later while parsing
             )
             self.methods.append(me)
 
         return enter
+
+    def enterIdentifier(self, ctx: ParserRuleContext):
+        if self.methods and self.methods[-1].name is None:
+            self.methods[-1].name = ctx.getText()
