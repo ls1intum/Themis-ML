@@ -10,7 +10,7 @@ from .authenticated_request import AuthRequest
 from ..database.feedback_suggestion_entity import FeedbackSuggestionEntity
 from ..extract_methods.extract_methods import extract_methods
 from ..extract_methods.method_node import MethodNode
-from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions_for_multiple_feedbacks
+from ..feedback_suggestion.feedback_suggestions import get_feedback_suggestions
 from ..helpers.request_error_handling import check_artemis_response
 from ..helpers.slash import ensure_leading_slash
 
@@ -27,7 +27,7 @@ class FeedbackSuggestionsRequest(BaseModel):
 
 
 @router.post("/feedback_suggestions")
-def get_feedback_suggestions(
+def get_feedback_suggestions_endpoint(
         request: FeedbackSuggestionsRequest,
         authorization: Union[str, None] = Header()
 ):
@@ -51,7 +51,7 @@ def get_feedback_suggestions(
     # remove own participation
     db_feedbacks = [f for f in db_feedbacks if f.participation_id != request.participation_id]
 
-    suggested_feedbacks = get_feedback_suggestions_for_multiple_feedbacks(
-        function_blocks, db_feedbacks, request.include_code)
+    suggested_feedbacks = get_feedback_suggestions(
+        function_blocks, db_feedbacks, include_code=request.include_code)
 
     return suggested_feedbacks
