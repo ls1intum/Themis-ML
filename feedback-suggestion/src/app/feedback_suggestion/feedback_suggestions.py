@@ -33,7 +33,7 @@ def get_feedback_suggestions_for_method(
     refs = []
     suggested = []
     for feedback in feedbacks:
-        if feedback.src_file == filepath:
+        if feedback.src_file == filepath and feedback.method_name == method.name:
             candidates.append(method.source_code)
             refs.append(feedback.code)
 
