@@ -29,11 +29,17 @@ def get_feedback_suggestions_for_method(
 ):
     """Get feedback suggestions from comparisons between a function block of a given submission
     and multiple feedback rows"""
+    exact_match_feedbacks = []
     feedback_refs = []
     suggested = []
     for feedback in feedbacks:
         if feedback.src_file == filepath and feedback.method_name == method.name:
-            feedback_refs.append(feedback)
+            if "".join(feedback.code.split()) == "".join(method.source_code.split()):
+                # no need to throw this into the ML machine,
+                # we already know it's pretty much a perfect match
+                exact_match_feedbacks.append(feedback)
+            else:
+                feedback_refs.append(feedback)
     candidates = [method.source_code] * len(feedback_refs)
 
     if len(candidates) == 0:
@@ -49,6 +55,12 @@ def get_feedback_suggestions_for_method(
     precision_scores = precision.tolist()
     similarity_scores_f1 = F1.tolist()
     similarity_scores_f3 = F3.tolist()
+
+    # add perfect matches again
+    feedback_refs.extend(exact_match_feedbacks)
+    similarity_scores_f1.extend([1.0] * len(exact_match_feedbacks))
+    similarity_scores_f3.extend([1.0] * len(exact_match_feedbacks))
+    precision_scores.extend([1.0] * len(exact_match_feedbacks))
 
     for feedback, similarity_score_f1, similarity_score_f3, precision_score in zip(
             feedback_refs, similarity_scores_f1, similarity_scores_f3, precision_scores,
