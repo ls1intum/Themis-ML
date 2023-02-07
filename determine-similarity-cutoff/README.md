@@ -6,7 +6,7 @@ be shown to the user.
 ## How to start
 - Get some feedback suggestions from the `/feedback_suggestions` endpoint as described in the other READMEs
 - Copy the suggestions in JSON format into a new (.gitignore-d) file called `suggestions.json` in this folder
-- Run `python start.py` to start the script. It will remove the suggestions.json file and instead put the suggestions into an SQLite database for faster access. 
+- Run `python start.py` to start the script. It will delete the contents of suggestions.json file and instead put the suggestions into an SQLite database for faster access. 
 Then it will open a Tkinter GUI for you to compare pieces of code.
 
 ## How to use the GUI

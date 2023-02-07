@@ -81,8 +81,7 @@ class CodeSimilarityComputer:
         """Compute the similarity scores for all comparisons."""
         wanted_comparisons = []
 
-        for code1, code2 in self.cache:
-            key = cache_key(code1, code2)
+        for key in self.cache:
             value = self.cache[key]
             if isinstance(value, UncomputedComparison):
                 wanted_comparisons.append((value.code1, value.code2))

@@ -21,6 +21,7 @@ def run_manual_comparison(
 ):
     suggestions = suggestions.copy()
     # sort once to only find later
+    print("Sorting suggestions...")
     suggestions.sort(
         key=lambda s: s.similarity_score
     )
@@ -32,6 +33,7 @@ def run_manual_comparison(
         return suggestion
 
     def next_suggestion():
+        print("Getting next suggestion...")
         if len(suggestions) == 0:
             print("No more suggestions!")
             return
@@ -40,17 +42,28 @@ def run_manual_comparison(
         opt_split, _ = find_optimal_split(accepted, rejected, suggestion_score)
         suggestion = pop_suggestion(opt_split)
         gui.set_suggestion(suggestion)
+        if suggestion.similarity_score > 0.99:
+            print("Skipping suggestion because it is 100% similar")
+            accept_and_next(suggestion)
+            return
+        if suggestion.similarity_score < 0.01:
+            print("Skipping suggestion because it is 0% similar")
+            reject_and_next(suggestion)
+            return
         if suggestion.code == suggestion.originally_on_code:
             print("Skipping suggestion because it is the same as the original code")
             accept_and_next(suggestion)
+            return
         for a in accepted:
             if a.code == suggestion.code:
                 print("Skipping suggestion because it is the same as an accepted code")
                 accept_and_next(suggestion)
+                return
         for r in rejected:
             if r.code == suggestion.code:
                 print("Skipping suggestion because it is the same as a rejected code")
                 reject_and_next(suggestion)
+                return
 
     def do_and_next(func, suggestion: FeedbackSuggestion):
         func(suggestion)
@@ -67,6 +80,7 @@ def run_manual_comparison(
     def reject_and_next(suggestion: FeedbackSuggestion):
         do_and_next(on_reject, suggestion)
 
+    print("Starting GUI...")
     root = Tk()
     gui = CompareGUI(root, accept_and_next, reject_and_next, get_accepted, get_rejected)
     next_suggestion()

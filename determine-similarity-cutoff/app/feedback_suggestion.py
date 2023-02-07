@@ -17,6 +17,7 @@ class FeedbackSuggestion:
     similarity_score: float
     similarity_score_f3: float
     precision_score: float
+    recall_score: float = 0.0
 
     def to_json(self):
         return {
@@ -33,5 +34,6 @@ class FeedbackSuggestion:
             "credits": self.credits,
             "similarity_score": self.similarity_score,
             "similarity_score_f3": self.similarity_score_f3,
-            "precision_score": self.precision_score
+            "precision_score": self.precision_score,
+            "recall_score": self.recall_score,
         }

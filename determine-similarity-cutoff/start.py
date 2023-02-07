@@ -10,6 +10,7 @@ from app.run_manual_comparison import run_manual_comparison
 GIVEN_SUGGESTIONS_FILE_NAME = "suggestions.json"
 GIVEN_SUGGESTIONS_DB_NAME = "suggestions.sqlite"
 
+print("Loading database...")
 db = dataset.connect(f"sqlite:///{GIVEN_SUGGESTIONS_DB_NAME}")
 suggestions = db["suggestions"]
 accepted = db["accepted"]
@@ -22,6 +23,8 @@ if Path(GIVEN_SUGGESTIONS_FILE_NAME).exists():
     for s in suggestions_json:
         suggestions.insert(s)
     Path(GIVEN_SUGGESTIONS_FILE_NAME).unlink()
+    with Path(GIVEN_SUGGESTIONS_FILE_NAME).open("w") as f:
+        json.dump([], f, indent=4)
 
 
 def load_suggestions(table_name) -> List[FeedbackSuggestion]:
@@ -51,6 +54,7 @@ def add_rejected_suggestion(suggestion: FeedbackSuggestion):
 
 
 if __name__ == "__main__":
+    print("Starting...")
     run_manual_comparison(
         load_suggestions("suggestions"),
         add_accepted_suggestion,
