@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class FeedbackSuggestion:
+    id: int
     exercise_id: int
     participation_id: int
     method_name: str
@@ -19,6 +20,7 @@ class FeedbackSuggestion:
 
     def to_json(self):
         return {
+            "id": self.id,
             "exercise_id": self.exercise_id,
             "participation_id": self.participation_id,
             "method_name": self.method_name,
