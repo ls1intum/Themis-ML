@@ -47,6 +47,7 @@ def get_ids(exercise_id: int):
 def notify_for_all(exercise_id: int):
     for participation_id in get_participation_ids(exercise_id):
         notify_themis_ml(exercise_id, participation_id)
+    return "Done"
 
 
 app.include_router(inject_router)
