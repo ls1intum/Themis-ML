@@ -1,3 +1,4 @@
+from bisect import *
 from tkinter import Tk
 from typing import List, Callable
 
@@ -7,9 +8,8 @@ from .gui.compare_gui import CompareGUI
 from .suggestion_score import suggestion_score
 
 
-def suggestion_distance_from_current_optimum(
-        suggestion: FeedbackSuggestion, accepted: List[FeedbackSuggestion], rejected: List[FeedbackSuggestion]):
-    return abs(suggestion.similarity_score - find_optimal_split(accepted, rejected, suggestion_score)[0])
+def equal_except_whitespace(s1: str, s2: str) -> bool:
+    return "".join(s1.split()) == "".join(s2.split())
 
 
 def run_manual_comparison(
@@ -20,20 +20,37 @@ def run_manual_comparison(
         get_rejected: Callable[[], List[FeedbackSuggestion]]
 ):
     suggestions = suggestions.copy()
+    # sort once to only find later
+    suggestions.sort(
+        key=lambda s: s.similarity_score
+    )
+
+    def pop_suggestion(opt_split: float) -> FeedbackSuggestion:
+        # finds the first suggestion with a similarity score greater than the optimal split
+        i = bisect_left(suggestions, opt_split, key=lambda s: s.similarity_score)
+        suggestion = suggestions.pop(i)
+        return suggestion
 
     def next_suggestion():
-        suggestions.sort(
-            key=lambda s: suggestion_distance_from_current_optimum(s, get_accepted(), get_rejected()),
-            reverse=True
-        )
         if len(suggestions) == 0:
             print("No more suggestions!")
             return
-        suggestion = suggestions.pop()
+        accepted = get_accepted()
+        rejected = get_rejected()
+        opt_split, _ = find_optimal_split(accepted, rejected, suggestion_score)
+        suggestion = pop_suggestion(opt_split)
         gui.set_suggestion(suggestion)
         if suggestion.code == suggestion.originally_on_code:
             print("Skipping suggestion because it is the same as the original code")
             accept_and_next(suggestion)
+        for a in accepted:
+            if a.code == suggestion.code:
+                print("Skipping suggestion because it is the same as an accepted code")
+                accept_and_next(suggestion)
+        for r in rejected:
+            if r.code == suggestion.code:
+                print("Skipping suggestion because it is the same as a rejected code")
+                reject_and_next(suggestion)
 
     def do_and_next(func, suggestion: FeedbackSuggestion):
         func(suggestion)

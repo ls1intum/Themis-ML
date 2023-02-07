@@ -2,6 +2,7 @@ import os
 from multiprocessing import Pool, cpu_count
 from typing import Dict, List, Iterator
 
+import torch
 from code_bert_score import score
 
 from .feedback import Feedback
@@ -9,6 +10,10 @@ from ..extract_methods.method_node import MethodNode
 
 # TODO: define threshold for similarity
 SIMILARITY_SCORE_THRESHOLD = 0.85
+
+
+def equal_except_whitespace(s1: str, s2: str) -> bool:
+    return "".join(s1.split()) == "".join(s2.split())
 
 
 def get_model_params(lang: str) -> dict:
@@ -34,7 +39,7 @@ def get_feedback_suggestions_for_method(
     suggested = []
     for feedback in feedbacks:
         if feedback.src_file == filepath and feedback.method_name == method.name:
-            if "".join(feedback.code.split()) == "".join(method.source_code.split()):
+            if equal_except_whitespace(feedback.code, method.source_code):
                 # no need to throw this into the ML machine,
                 # we already know it's pretty much a perfect match
                 exact_match_feedbacks.append(feedback)
@@ -49,7 +54,7 @@ def get_feedback_suggestions_for_method(
     precision, recall, F1, F3 = score(
         cands=candidates,
         refs=[f.code for f in feedback_refs],
-        # device=torch.device("mps"),  # TODO: only works on mac
+        device=torch.device("mps"),  # TODO: only works on mac
         **get_model_params("java")
     )
     precision_scores = precision.tolist()
