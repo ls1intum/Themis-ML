@@ -29,7 +29,7 @@ def run_manual_comparison(
     def pop_suggestion(opt_split: float) -> FeedbackSuggestion:
         # finds the first suggestion with a similarity score greater than the optimal split
         i = bisect_left(suggestions, opt_split, key=lambda s: s.similarity_score)
-        suggestion = suggestions.pop(i)
+        suggestion = suggestions.pop(min(i, len(suggestions) - 1))
         return suggestion
 
     def next_suggestion():
