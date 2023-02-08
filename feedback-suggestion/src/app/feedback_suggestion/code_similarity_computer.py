@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
 import torch
 from code_bert_score import score
@@ -64,7 +64,7 @@ class CodeSimilarityComputer:
     of 1.0 to identical code snippets (ignoring whitespace).
     """
     # keys are without whitespace
-    cache: Dict[Tuple[str, str], SimilarityScore | UncomputedComparison] = {}
+    cache: Dict[Tuple[str, str], Union[SimilarityScore, UncomputedComparison]] = {}
 
     def add_comparison(self, code1: str, code2: str):
         """Add a comparison to later compute."""
