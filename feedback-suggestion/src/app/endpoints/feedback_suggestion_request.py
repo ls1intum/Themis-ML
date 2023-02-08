@@ -77,6 +77,7 @@ def load_feedbacks(
                         Feedback(
                             exercise_id=request.exercise_id,
                             participation_id=request.participation_id,
+                            method_name=method.name,
                             code=method.source_code,
                             src_file=filepath,
                             from_line=feedback.from_line,

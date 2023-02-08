@@ -33,9 +33,9 @@ class FeedbackSuggestionEntity:
         with self.engine.connect() as conn:
             for feedback in feedbacks:
                 conn.execute(
-                    "INSERT INTO feedbacks (exercise_id, participation_id, code, src_file, from_line, to_line, "
-                    "text, credits) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                    (feedback.exercise_id, feedback.participation_id, feedback.code, feedback.src_file,
+                    "INSERT INTO feedbacks (exercise_id, participation_id, method_name, code, src_file, "
+                    "from_line, to_line, text, credits) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (feedback.exercise_id, feedback.participation_id, feedback.method_name, feedback.code, feedback.src_file,
                      feedback.from_line, feedback.to_line, feedback.text, feedback.credits)
                 )
 

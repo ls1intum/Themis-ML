@@ -1,24 +1,11 @@
-import os
 from multiprocessing import Pool, cpu_count
 from typing import Dict, List, Iterator
 
-from code_bert_score import score
-
+from .code_similarity_computer import CodeSimilarityComputer
 from .feedback import Feedback
 from ..extract_methods.method_node import MethodNode
 
-# TODO: define threshold for similarity
-SIMILARITY_SCORE_THRESHOLD = 0.85
-
-
-def get_model_params(lang: str) -> dict:
-    if "ML_JAVA_MODEL" in os.environ:
-        if os.path.exists(os.environ["ML_JAVA_MODEL"]):
-            print("Using local model")
-            return dict(model_type=os.environ["ML_JAVA_MODEL"])
-        else:
-            print("Local model not found, using default model")
-    return dict(lang=lang)
+SIMILARITY_SCORE_THRESHOLD = 0.75
 
 
 def get_feedback_suggestions_for_method(
@@ -29,32 +16,20 @@ def get_feedback_suggestions_for_method(
 ):
     """Get feedback suggestions from comparisons between a function block of a given submission
     and multiple feedback rows"""
-    candidates = []
-    refs = []
-    suggested = []
+    considered_feedbacks = []
+    sim_computer = CodeSimilarityComputer()
     for feedback in feedbacks:
-        if feedback.src_file == filepath:
-            candidates.append(method.source_code)
-            refs.append(feedback.code)
+        if feedback.src_file == filepath and feedback.method_name == method.name:
+            considered_feedbacks.append(feedback)
+            sim_computer.add_comparison(method.source_code, feedback.code)
 
-    if len(candidates) == 0:
-        return suggested
+    sim_computer.compute_similarity_scores()
 
-    # F1 is the similarity score, F3 is similar to F1 but with a higher weight for recall than precision
-    precision, recall, F1, F3 = score(
-        cands=candidates,
-        refs=refs,
-        **get_model_params("java")
-    )
-    precision_scores = precision.tolist()
-    similarity_scores_f1 = F1.tolist()
-    similarity_scores_f3 = F3.tolist()
-
-    for feedback, similarity_score_f1, similarity_score_f3, precision_score in zip(
-            feedbacks, similarity_scores_f1, similarity_scores_f3, precision_scores
-    ):
-        if similarity_score_f1 >= SIMILARITY_SCORE_THRESHOLD:
-            print(f"Found similar code with similarity score {similarity_score_f1}: {feedback}")
+    suggested = []
+    for feedback in considered_feedbacks:
+        similarity = sim_computer.get_similarity_score(method.source_code, feedback.code)
+        if similarity.f1 >= SIMILARITY_SCORE_THRESHOLD:
+            print(f"Found similar code with similarity score {similarity}: {feedback}")
             original_code = feedback.code
             feedback_to_give = feedback.to_dict()
             if include_code:
@@ -65,9 +40,10 @@ def get_feedback_suggestions_for_method(
             feedback_to_give["to_line"] = method.stop_line
             result_data = {
                 **feedback_to_give,
-                "similarity_score": similarity_score_f1,
-                "similarity_score_f3": similarity_score_f3,
-                "precision_score": precision_score
+                "precision_score": similarity.precision,
+                "recall_score": similarity.recall,
+                "similarity_score": similarity.f1,
+                "similarity_score_f3": similarity.f3,
             }
             if include_code:
                 result_data["originally_on_code"] = original_code

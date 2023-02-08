@@ -1,0 +1,6 @@
+alembic==1.9.2
+banal==1.0.6
+dataset==1.6.0
+Mako==1.2.4
+MarkupSafe==2.1.2
+SQLAlchemy==1.4.46
