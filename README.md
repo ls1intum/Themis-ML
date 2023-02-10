@@ -43,7 +43,7 @@ to stop and remove all containers.
 
 ## Production
 
-In production deployment, the server can be accessed via `ios2223cit.ase.cit.tum.de`.
+In production deployment, the server can be accessed via [ios2223cit.ase.cit.tum.de](https://ios2223cit.ase.cit.tum.de/).
 
 Using the `docker-compose.production.yml` file included in the root directory of the repository is the easiest way to start the system.
 
