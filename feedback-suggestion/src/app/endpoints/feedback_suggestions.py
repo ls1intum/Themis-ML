@@ -27,7 +27,7 @@ class FeedbackSuggestionsRequest(BaseModel):
 
 
 @router.post("/feedback_suggestions")
-def get_feedback_suggestions_endpoint(
+async def get_feedback_suggestions_endpoint(
         request: FeedbackSuggestionsRequest,
         authorization: Union[str, None] = Header()
 ):
@@ -51,7 +51,7 @@ def get_feedback_suggestions_endpoint(
     # remove own participation
     db_feedbacks = [f for f in db_feedbacks if f.participation_id != request.participation_id]
 
-    suggested_feedbacks = get_feedback_suggestions(
+    suggested_feedbacks = await get_feedback_suggestions(
         function_blocks, db_feedbacks, include_code=request.include_code)
 
     return suggested_feedbacks
