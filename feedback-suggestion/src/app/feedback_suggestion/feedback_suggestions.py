@@ -69,4 +69,7 @@ def get_feedback_suggestions(
                                for filepath, methods in function_blocks.items()
                                for method in methods
                            ])
+    # this needs to be called for the server not to shut down after the request
+    pool.close()
+    pool.join()
     return [result for result_list in results for result in result_list]
