@@ -1,5 +1,6 @@
 import asyncio
 import concurrent
+from multiprocessing import get_context
 from typing import Dict, List, Iterator
 
 from .code_similarity_computer import CodeSimilarityComputer
@@ -64,7 +65,8 @@ async def get_feedback_suggestions(
     because it uses multiple processes to do the comparisons in parallel.
     """
     loop = asyncio.get_event_loop()
-    with concurrent.futures.ProcessPoolExecutor() as pool:
+    # https://github.com/tiangolo/fastapi/issues/1487#issuecomment-657290725
+    with concurrent.futures.ProcessPoolExecutor(mp_context=get_context("spawn")) as pool:
         results = await asyncio.gather(*[
             loop.run_in_executor(pool, get_feedback_suggestions_for_method,
                                  feedbacks, filepath, method, include_code)
