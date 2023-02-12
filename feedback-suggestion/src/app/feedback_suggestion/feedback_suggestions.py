@@ -1,4 +1,6 @@
-from multiprocessing import Pool, cpu_count
+import asyncio
+import concurrent
+from multiprocessing import get_context
 from typing import Dict, List, Iterator
 
 from .code_similarity_computer import CodeSimilarityComputer
@@ -51,7 +53,7 @@ def get_feedback_suggestions_for_method(
     return sorted(suggested, key=lambda x: x["similarity_score"], reverse=True)
 
 
-def get_feedback_suggestions(
+async def get_feedback_suggestions(
         function_blocks: Dict[str, List[MethodNode]],
         feedbacks: Iterator[Feedback],
         include_code: bool = False
@@ -62,11 +64,13 @@ def get_feedback_suggestions(
     This is quicker than calling get_feedback_suggestions_for_method for each method
     because it uses multiple processes to do the comparisons in parallel.
     """
-    pool = Pool(processes=cpu_count())
-    results = pool.starmap(get_feedback_suggestions_for_method,
-                           [
-                               (feedbacks, filepath, method, include_code)
-                               for filepath, methods in function_blocks.items()
-                               for method in methods
-                           ])
+    loop = asyncio.get_event_loop()
+    # https://github.com/tiangolo/fastapi/issues/1487#issuecomment-657290725
+    with concurrent.futures.ProcessPoolExecutor(mp_context=get_context("spawn")) as pool:
+        results = await asyncio.gather(*[
+            loop.run_in_executor(pool, get_feedback_suggestions_for_method,
+                                 feedbacks, filepath, method, include_code)
+            for filepath, methods in function_blocks.items()
+            for method in methods
+        ])
     return [result for result_list in results for result in result_list]
