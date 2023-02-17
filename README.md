@@ -5,7 +5,7 @@ This system implements an approach for automated feedback suggestions of program
 ## Architecture
 Themis-ML is built using a microservice architecture. For now, it has two components:
 
-  1.  **Load Balancer:** Provides Service in the form of a HTTP REST API to communicate with the Themis App (and probably also Artemis).
+  1.  **Load Balancer:** Provides service in the form of a HTTP REST API to communicate with the Themis App.
   2.  **Feedback Suggestion:** Component for generating automated feedback suggestions based on Machine Learning models.
 
 ## Testing
